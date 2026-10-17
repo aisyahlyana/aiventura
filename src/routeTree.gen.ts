@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GameFixThePromptRouteImport } from './routes/game.fix-the-prompt'
+import { Route as PrintFixThePromptRouteImport } from './routes/print.fix-the-prompt'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const GameFixThePromptRoute = GameFixThePromptRouteImport.update({
   path: '/game/fix-the-prompt',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrintFixThePromptRoute = PrintFixThePromptRouteImport.update({
+  id: '/print/fix-the-prompt',
+  path: '/print/fix-the-prompt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/game/fix-the-prompt': typeof GameFixThePromptRoute
+  '/print/fix-the-prompt': typeof PrintFixThePromptRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/game/fix-the-prompt': typeof GameFixThePromptRoute
+  '/print/fix-the-prompt': typeof PrintFixThePromptRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/game/fix-the-prompt': typeof GameFixThePromptRoute
+  '/print/fix-the-prompt': typeof PrintFixThePromptRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/game/fix-the-prompt'
+  fullPaths: '/' | '/game/fix-the-prompt' | '/print/fix-the-prompt'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/game/fix-the-prompt'
-  id: '__root__' | '/' | '/game/fix-the-prompt'
+  to: '/' | '/game/fix-the-prompt' | '/print/fix-the-prompt'
+  id: '__root__' | '/' | '/game/fix-the-prompt' | '/print/fix-the-prompt'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GameFixThePromptRoute: typeof GameFixThePromptRoute
+  PrintFixThePromptRoute: typeof PrintFixThePromptRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GameFixThePromptRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/print/fix-the-prompt': {
+      id: '/print/fix-the-prompt'
+      path: '/print/fix-the-prompt'
+      fullPath: '/print/fix-the-prompt'
+      preLoaderRoute: typeof PrintFixThePromptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GameFixThePromptRoute: GameFixThePromptRoute,
+  PrintFixThePromptRoute: PrintFixThePromptRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
