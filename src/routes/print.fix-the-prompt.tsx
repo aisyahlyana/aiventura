@@ -22,7 +22,7 @@ export const Route = createFileRoute("/print/fix-the-prompt")({
 function PrintPack() {
   return (
     <div className="print-root min-h-screen bg-navy px-4 pb-10">
-      <div className="no-print mx-auto flex max-w-[210mm] flex-wrap items-center justify-between gap-3 py-5">
+      <header className="no-print mx-auto flex max-w-[210mm] flex-wrap items-center justify-between gap-3 py-5">
         <span className="text-[15px] font-extrabold text-sky-text">12 A4 pages · print one per sheet</span>
         <div className="flex flex-wrap items-center gap-3">
           <BackLink to="/game/fix-the-prompt" label="Back to the game" />
@@ -30,7 +30,7 @@ function PrintPack() {
             <PrintIcon size={22} /> Print
           </button>
         </div>
-      </div>
+      </header>
       <TeacherGuide />
       <Worksheet />
       <Cards />
