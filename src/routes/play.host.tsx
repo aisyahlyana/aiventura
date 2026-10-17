@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import QRCode from "qrcode";
 import { Check, Lock, Search, ShieldCheck, Sandwich } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CLASS_GAMES, canPlayClassGame } from "@/lib/classGames";
@@ -8,7 +7,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { hostGetState, hostOpenRoom } from "@/lib/play.functions";
 import { StarPage, Wordmark } from "@/components/brand/Brand";
 import { BackLink } from "@/components/brand/BackButton";
-import { LockIcon } from "@/components/brand/Icons";
+import { DEMO_QR_SVG } from "@/lib/demoQr";
 import { DEMO_TEAMS, LIVE_TEAM, formatCode } from "@/lib/play";
 
 export const Route = createFileRoute("/play/host")({
@@ -146,13 +145,10 @@ function Host({ hostKey }: { hostKey: string }) {
 /* ---------------- Stage 1: Join ---------------- */
 
 function JoinStage({ room, teams, players }: { room: Room; teams: Team[]; players: Player[] }) {
-  const [qr, setQr] = useState("");
   const [joinUrl, setJoinUrl] = useState("");
   useEffect(() => {
-    const url = `${window.location.origin}/play/join?code=${room.code}`;
     setJoinUrl(`${window.location.host}/play/join`);
-    QRCode.toString(url, { type: "svg", margin: 0, color: { dark: "#22325c", light: "#ffffff" } }).then(setQr);
-  }, [room.code]);
+  }, []);
   const realCount = players.length;
 
   return (
@@ -162,7 +158,7 @@ function JoinStage({ room, teams, players }: { room: Room; teams: Team[]; player
         <p className="m-0 text-[17px] font-bold leading-6 text-ink-muted">
           Scan the code, or go to <strong className="text-navy">{joinUrl}</strong> and type the room code.
         </p>
-        <div role="img" aria-label={`QR code to join room ${formatCode(room.code)}`} className="box-border h-[216px] w-[216px] rounded-[20px] border-[3px] border-navy p-3.5 [&_svg]:h-full [&_svg]:w-full" dangerouslySetInnerHTML={{ __html: qr }} />
+        <div role="img" aria-label="QR code that students scan to join the room" className="box-border h-[216px] w-[216px] rounded-[20px] border-[3px] border-navy p-3.5 [&_svg]:h-full [&_svg]:w-full" dangerouslySetInnerHTML={{ __html: DEMO_QR_SVG }} />
         <div className="rounded-[18px] bg-sun-tint px-[22px] py-3" style={{ boxShadow: "4px 4px 0 var(--ink)" }}>
           <div className="text-[13px] font-black uppercase tracking-[.1em] text-ink-muted">Room code</div>
           <div className="font-display text-[52px] leading-[58px] tracking-[.08em]">{formatCode(room.code)}</div>
@@ -176,9 +172,6 @@ function JoinStage({ room, teams, players }: { room: Room; teams: Team[]; player
             <span className="pulse h-2.5 w-2.5 rounded-full bg-blue-edge" />
             {realCount} {realCount === 1 ? "player" : "players"} joined + 1 live team
           </div>
-        </div>
-        <div className="flex items-center gap-2.5 rounded-[14px] bg-lilac-tint px-3.5 py-2.5 text-[15px] font-bold leading-[21px]">
-          <LockIcon size={20} /> Everyone plays with a fun nickname. No real names, ever.
         </div>
         <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
           {teams.filter((t) => t.name !== LIVE_TEAM.name).map((t) => {
