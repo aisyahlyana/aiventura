@@ -117,7 +117,7 @@ function JourneyMap() {
                         type="button"
                         className="btn-chunky mt-2"
                         onClick={() => {
-                          if (l.game) navigate({ to: l.game });
+                          if (l.lesson) navigate({ to: l.lesson });
                           else { setProgress(gi + 1); setOpen(null); }
                         }}
                       >
@@ -128,7 +128,7 @@ function JourneyMap() {
                       <button
                         type="button"
                         className="btn-ghost mt-2 py-3 text-lg"
-                        onClick={() => (l.game ? navigate({ to: l.game }) : setOpen(null))}
+                        onClick={() => (l.lesson ? navigate({ to: l.lesson }) : setOpen(null))}
                       >
                         Practise again
                       </button>

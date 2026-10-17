@@ -61,7 +61,7 @@ function SayItClearly() {
   }, [screen, shown, result]);
 
   useEffect(() => {
-    if (screen === "feedback") completeStep(1);
+    if (screen === "feedback") completeStep(0);
   }, [screen]);
 
   const edit = (next: string[]) => { setSteps(next); setIsExample(false); };
@@ -116,7 +116,7 @@ function SayItClearly() {
       <header className="relative border-b-2 border-white/15">
         <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-4 px-6 py-4">
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-pink-soft">Phase 1 · Game 2</span>
+            <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-pink-soft">Phase 1 · Step 1 game</span>
             <StepPills steps={["Write", "Watch", "Feedback"]} current={pill} label={`Step ${pill + 1} of 3: ${["Write", "Watch", "Feedback"][pill]}`} />
           </div>
           {screen === "write" ? <BackLink to="/journey" label="Journey map" /> : <BackScreen onClick={back} label="Edit steps" />}
