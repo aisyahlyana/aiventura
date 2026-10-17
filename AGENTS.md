@@ -23,4 +23,4 @@
 
 ## Classroom games
 
-- Keep classroom availability in a browser-safe game catalog; the host page selects games and links to the existing game screen with classroom return context, avoiding duplicated gameplay.
+- Keep classroom availability in a browser-safe game catalog; the chooser sits above the existing host lobby without routing into or embedding standalone gameplay.
