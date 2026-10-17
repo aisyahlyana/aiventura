@@ -1,16 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
-import type { Session } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { hostGetState, hostOpenRoom, hostSendLive, hostUpdateRoom } from "@/lib/play.functions";
 import { StarPage, StepPills, Wordmark } from "@/components/brand/Brand";
 import { CheckIcon, HeartIcon, LockIcon, ShieldIcon, StarIcon } from "@/components/brand/Icons";
-import { HostAuth } from "@/components/play/HostAuth";
 import { PartChips, SafetyPanel } from "@/components/play/PromptChecks";
 import { TeacherDrawing } from "@/components/play/TeacherDrawing";
 import { buildDrawing, clueFound } from "@/lib/drawing";
 import { highlightParts } from "@/lib/highlight";
-import { DEFAULT_CLUES, DEMO_TEAMS, LIVE_TEAM, STUDENT_TEAMS, formatCode, type DemoTeam } from "@/lib/play";
+import { DEMO_TEAMS, LIVE_TEAM, formatCode, type DemoTeam } from "@/lib/play";
 import { DRAW_PARTS, checkPrompt, detectParts, type DrawPartId } from "@/lib/safety";
 
 export const Route = createFileRoute("/play/host")({
@@ -128,7 +127,7 @@ function Host({ hostKey }: { hostKey: string }) {
 
   return (
     <>
-      <HostHeader stage={stage} onSignOut={signOut} />
+      <HostHeader stage={stage} />
       <main className="relative mx-auto flex max-w-[1180px] flex-col gap-6 px-6 pb-[72px] pt-7">
         {error && <div role="alert" className="card-raised p-5 font-bold">{error}</div>}
         {!room && !error && <div className="p-10 text-center font-extrabold text-sky-text">Opening your room…</div>}
@@ -140,7 +139,7 @@ function Host({ hostKey }: { hostKey: string }) {
             players={players}
             prompts={prompts}
             onClues={(clues) => updateRoom({ clues })}
-            onSent={loadLists}
+            onSendLive={sendLive}
             onNext={() => updateRoom({ stage: "reveal" })}
           />
         )}
@@ -151,7 +150,7 @@ function Host({ hostKey }: { hostKey: string }) {
             prompts={prompts}
             onFav={(id) => updateRoom({ favourite_team_id: room.favourite_team_id === id ? null : id })}
             onBack={() => updateRoom({ stage: "write" })}
-            onAgain={() => { setRoom(null); setTeams([]); setPlayers([]); setPrompts([]); openRoom(true); }}
+            onAgain={() => { setRoom(null); setRoomId(null); setTeams([]); setPlayers([]); setPrompts([]); openRoom(true); }}
           />
         )}
       </main>
@@ -233,10 +232,10 @@ function JoinStage({ room, teams, players, onNext }: { room: Room; teams: Team[]
 /* ---------------- Stage 2: Write ---------------- */
 
 function WriteStage({
-  room, teams, players, prompts, onClues, onSent, onNext,
+  room, teams, players, prompts, onClues, onSendLive, onNext,
 }: {
   room: Room; teams: Team[]; players: Player[]; prompts: Prompt[];
-  onClues: (c: string[]) => void; onSent: () => void; onNext: () => void;
+  onClues: (c: string[]) => void; onSendLive: (text: string) => Promise<boolean>; onNext: () => void;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(room.clues);
@@ -250,10 +249,9 @@ function WriteStage({
   async function sendLive() {
     if (!live || !safety.canSend) return;
     const text = liveText.trim();
-    await supabase.from("prompts").upsert({ room_id: room.id, team_id: live.id, text, created_at: new Date().toISOString() }, { onConflict: "team_id" });
+    if (!(await onSendLive(text))) return;
     setLiveText(text);
     setSentText(text);
-    onSent();
   }
 
   return (
