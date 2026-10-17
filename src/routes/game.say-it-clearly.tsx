@@ -7,7 +7,7 @@ import { CheckIcon, CrossIcon, LockIcon, PlusIcon, StarIcon } from "@/components
 import { Bolt, KitchenScene } from "@/components/play/KitchenScene";
 import { completeStep } from "@/lib/journey";
 import {
-  EXAMPLE_STEPS, GOALS, HELPER_WORDS, LEVELS, MAX_STEPS, MAX_STEP_LENGTH, PRO_STEPS, START,
+  GOALS, HELPER_WORDS, LEVELS, MAX_STEPS, MAX_STEP_LENGTH, PRO_STEPS, START,
   practiceBolt, starsFor, type BoltRun, type Kitchen, type Mood,
 } from "@/lib/sayItClearly";
 import { runBolt } from "@/lib/sayItClearly.functions";
@@ -32,8 +32,7 @@ const STEP_MS = 2900;
 function SayItClearly() {
   const run = useServerFn(runBolt);
   const [screen, setScreen] = useState<Screen>("write");
-  const [steps, setSteps] = useState<string[]>(EXAMPLE_STEPS);
-  const [isExample, setIsExample] = useState(true);
+  const [steps, setSteps] = useState<string[]>([""]);
   const [result, setResult] = useState<BoltRun | null>(null);
   const [usedAi, setUsedAi] = useState(false);
   const [shown, setShown] = useState(-1); // which step Bolt is acting out
@@ -64,7 +63,7 @@ function SayItClearly() {
     if (screen === "feedback") completeStep(0);
   }, [screen]);
 
-  const edit = (next: string[]) => { setSteps(next); setIsExample(false); };
+  const edit = (next: string[]) => setSteps(next);
 
   async function tellBolt() {
     const list = steps.map((s) => s.trim()).filter(Boolean);
@@ -158,9 +157,6 @@ function SayItClearly() {
               <h2 className="kicker m-0 text-[15px] text-pink-deep">Your steps for Bolt</h2>
               <p className="m-0 mt-1 text-[15px] font-bold leading-[21px] text-ink-muted">Make a peanut butter and jelly sandwich on the plate. Bolt can't guess, so say every little thing.</p>
             </div>
-            {isExample && screen === "write" && (
-              <div className="rounded-xl bg-sun-tint px-3.5 py-2.5 text-[15px] font-bold leading-[21px]">These are example steps. Tell Bolt to see what happens, then fix them!</div>
-            )}
             <ol className="m-0 flex list-none flex-col gap-2 p-0">
               {steps.map((t, i) => {
                 const played = result?.steps[i];
@@ -206,7 +202,7 @@ function SayItClearly() {
                   <button type="button" className="btn-ghost" disabled={thinking || steps.length >= MAX_STEPS} onClick={() => edit([...steps, ""])}>
                     <PlusIcon size={16} /> Add a step
                   </button>
-                  <button type="button" className="btn-ghost" disabled={thinking} onClick={() => edit(["", "", ""])}>Clear all</button>
+                  <button type="button" className="btn-ghost" disabled={thinking} onClick={() => edit([""])}>Clear all</button>
                 </div>
                 <div>
                   <div className="kicker mb-1.5 text-[13px] text-ink-muted">Words that help Bolt</div>
