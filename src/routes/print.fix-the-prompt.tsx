@@ -25,10 +25,10 @@ function PrintPack() {
       <header className="no-print mx-auto flex max-w-[210mm] flex-wrap items-center justify-between gap-3 py-5">
         <span className="text-[15px] font-extrabold text-sky-text">12 A4 pages · print one per sheet</span>
         <div className="flex flex-wrap items-center gap-3">
-          <BackLink to="/game/fix-the-prompt" label="Back to the game" />
           <button type="button" className="btn-chunky tone-sun" onClick={() => window.print()}>
             <PrintIcon size={22} /> Print
           </button>
+          <BackLink to="/game/fix-the-prompt" label="Back to the game" />
         </div>
       </header>
       <TeacherGuide />
