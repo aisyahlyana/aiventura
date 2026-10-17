@@ -29,7 +29,7 @@ function HostPage() {
         </div>
       </header>
       <iframe
-        src="/AIventura_Prototype.html"
+        src="/classroom/index.html"
         title="AIventura classroom demo"
         className="min-h-0 w-full flex-1 border-0"
       />
