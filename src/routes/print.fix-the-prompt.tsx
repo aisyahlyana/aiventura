@@ -21,9 +21,9 @@ export const Route = createFileRoute("/print/fix-the-prompt")({
 
 function PrintPack() {
   return (
-    <div className="print-root min-h-screen bg-navy px-4 pb-10">
+    <div className="print-root min-h-screen sky-ground px-4 pb-10">
       <header className="no-print mx-auto flex max-w-[210mm] flex-wrap items-center justify-between gap-3 py-5">
-        <span className="text-[15px] font-extrabold text-sky-text">12 A4 pages · print one per sheet</span>
+        <span className="text-[15px] font-extrabold text-ink-muted">12 A4 pages · print one per sheet</span>
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" className="btn-chunky tone-sun" onClick={() => window.print()}>
             <PrintIcon size={22} /> Print
@@ -273,7 +273,7 @@ function PracticePages({ p }: { p: Practice }) {
       <Page>
         <div className="flex items-center justify-between gap-4"><Wordmark height={48} /><TeamName /></div>
         <div className={`${p.tone} flex items-center gap-4`}>
-          <div className="flex h-14 w-14 flex-none items-center justify-center rounded-full font-display text-2xl" style={{ background: "var(--face)", boxShadow: "0 4px 0 var(--edge)" }}>{p.n}</div>
+          <div className="flex h-14 w-14 flex-none items-center justify-center rounded-full font-display text-2xl" style={{ background: "var(--face)", boxShadow: "4px 4px 0 var(--ink)" }}>{p.n}</div>
           <div>
             <div className="text-[13px] font-black uppercase tracking-[.1em] text-ink-muted">Fix the Prompt · practice {p.n} of 4 · cards on the next page</div>
             <h1 className="m-0 font-display text-[30px] leading-9">{p.title}</h1>
