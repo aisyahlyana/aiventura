@@ -121,7 +121,7 @@ export const hostUpdateRoom = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const db = await ownedRoom(data.roomId, data.hostKey);
     const { roomId, hostKey: _k, ...patch } = data;
-    await db.from("rooms").update(patch).eq("id", roomId);
+    await db.from("rooms").update(JSON.parse(JSON.stringify(patch))).eq("id", roomId);
     return { ok: true };
   });
 
