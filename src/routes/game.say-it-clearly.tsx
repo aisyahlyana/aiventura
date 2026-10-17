@@ -17,9 +17,9 @@ export const Route = createFileRoute("/game/say-it-clearly")({
   validateSearch: (search: Record<string, unknown>) => ({ classPlay: search["classPlay"] === true || search["classPlay"] === "true" }),
   head: () => ({
     meta: [
-      { title: "Say It Clearly · aiventura" },
+      { title: "Prompt It Clearly · aiventura" },
       { name: "description", content: "A class game: write exact steps for Bolt the robot chef, who does exactly what you say, nothing more." },
-      { property: "og:title", content: "Say It Clearly · aiventura" },
+      { property: "og:title", content: "Prompt It Clearly · aiventura" },
       { property: "og:description", content: "Bolt follows your instructions exactly. Can your steps make a perfect sandwich?" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -136,7 +136,7 @@ function SayItClearly() {
             <Bolt mood="happy" s={START} width={58} />
           </div>
           <div className="min-w-0 flex-[1_1_360px]">
-            <h1 className="m-0 font-display text-[44px] leading-[50px] title-coral">Say It Clearly</h1>
+            <h1 className="m-0 font-display text-[44px] leading-[50px] title-coral">Prompt It Clearly</h1>
             <p className="m-0 mt-1 text-[17px] font-bold leading-6 text-sky-text">Bolt the robot chef follows your steps exactly, just like an AI follows a prompt. Can you get a perfect sandwich?</p>
           </div>
         </div>

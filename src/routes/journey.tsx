@@ -128,7 +128,7 @@ function JourneyMap() {
                         className="btn-ghost mt-2 py-3 text-lg"
                         onClick={() => (l.lesson ? navigate({ to: l.lesson }) : setOpen(null))}
                       >
-                        Practise again
+                        Learn again
                       </button>
                     )}
                     {locked && (
