@@ -241,7 +241,7 @@ function tickTimer(){
 function go(step){
   clearTimers(); S.step = step; S.fixShown = false;
   if (step === 'lobby' && S.mode === 'devices'){
-    timers.push(setInterval(() => { if (S.joined < CLASS){ S.joined++; tickLobby(); } }, 180));
+    timers.push(setInterval(() => { if (S.joined < CLASS){ S.joined++; tickLobby(); } }, 90));
   }
   if (step === 'task'){
     if (S.mode === 'devices'){
