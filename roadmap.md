@@ -5,5 +5,5 @@
 
 # Bolt AI connection
 - [x] Confirm the managed AI key and existing model availability.
-- [ ] Add gateway request identification and log missing keys, empty replies and invalid JSON.
-- [ ] Verify connection tests and the requested two-step round without changing the game.
+- [x] Add gateway request identification and log missing keys, empty replies and invalid JSON.
+- [x] Verify connection tests and the requested two-step round without changing the game.
