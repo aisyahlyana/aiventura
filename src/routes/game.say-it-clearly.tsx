@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { StarPage, StepPills } from "@/components/brand/Brand";
 import { BackLink, BackScreen } from "@/components/brand/BackButton";
+import { Button } from "@/components/ui/button";
 import { CheckIcon, CrossIcon, LockIcon, PlusIcon, StarIcon } from "@/components/brand/Icons";
 import { Bolt, KitchenScene } from "@/components/play/KitchenScene";
 import { completeStep } from "@/lib/journey";
@@ -120,7 +121,12 @@ function SayItClearly() {
             <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-pink-soft">Phase 1 · Step 1 game</span>
             <StepPills steps={["Write", "Watch", "Feedback"]} current={pill} label={`Step ${pill + 1} of 3: ${["Write", "Watch", "Feedback"][pill]}`} />
           </div>
-          {screen === "write" ? <BackLink to={classPlay ? "/play/host" : "/journey"} label={classPlay ? "Choose a game" : "Journey map"} /> : <BackScreen onClick={back} label="Edit steps" />}
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-3">
+            <Button asChild variant="outline" className="btn-chunky tone-white !px-4 !py-2.5 !text-[15px] h-auto">
+              <Link to="/play/host">Play in class</Link>
+            </Button>
+            {screen === "write" ? <BackLink to={classPlay ? "/play/host" : "/journey"} label={classPlay ? "Choose a game" : "Journey map"} /> : <BackScreen onClick={back} label="Edit steps" />}
+          </div>
         </div>
       </header>
 
