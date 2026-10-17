@@ -8,7 +8,7 @@ import { NICKNAMES, formatCode, normaliseCode } from "@/lib/play";
 import { MAX_PROMPT_LENGTH, checkPrompt } from "@/lib/safety";
 
 export const Route = createFileRoute("/play/join")({
-  validateSearch: (s: Record<string, unknown>) => ({ code: typeof s["code"] === "string" ? s["code"] : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({ code: s["code"] != null ? String(s["code"]) : undefined }),
   head: () => ({
     meta: [
       { title: "Join the game · aiventura" },
