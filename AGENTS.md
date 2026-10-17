@@ -20,3 +20,7 @@
 ## Bolt AI connection
 
 - Keep Bolt credentials and gateway calls inside its server function, with request identification and redacted failure diagnostics; this keeps secrets private and makes practice fallbacks traceable.
+
+## Classroom games
+
+- Keep classroom availability in a browser-safe game catalog; the host page selects games and links to the existing game screen with classroom return context, avoiding duplicated gameplay.
