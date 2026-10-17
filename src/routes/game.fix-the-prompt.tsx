@@ -48,7 +48,7 @@ function FixThePrompt() {
       <header className="relative border-b-2 border-white/15">
         <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-4 px-6 py-4">
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-pink-soft">Phase 1 · Game 1</span>
+            <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-ink-muted">Phase 1 · Game 1</span>
             <StepPills steps={["Lesson", "Practise", "Feedback"]} current={step} label={`Step ${step + 1} of 3: ${["Lesson", "Practise", "Feedback"][step]}`} />
           </div>
           {screen === "intro" ? <BackLink to="/journey" label="Journey map" /> : <BackScreen onClick={back} label="Back" />}

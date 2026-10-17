@@ -101,7 +101,7 @@ function Join() {
           <Wordmark height={40} />
           <div className="flex items-center gap-2.5">
             {room && (
-              <span className="text-[13px] font-extrabold uppercase tracking-[.08em] text-pink-soft">
+              <span className="text-[13px] font-extrabold uppercase tracking-[.08em] text-ink-muted">
                 Room {formatCode(room.code)}
               </span>
             )}
