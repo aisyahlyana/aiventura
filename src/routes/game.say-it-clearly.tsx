@@ -119,7 +119,7 @@ function SayItClearly() {
             <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-pink-soft">Phase 1 · Game 2</span>
             <StepPills steps={["Write", "Watch", "Feedback"]} current={pill} label={`Step ${pill + 1} of 3: ${["Write", "Watch", "Feedback"][pill]}`} />
           </div>
-          {screen === "write" ? <BackLink to="/" label="Journey map" /> : <BackScreen onClick={back} label="Edit steps" />}
+          {screen === "write" ? <BackLink to="/journey" label="Journey map" /> : <BackScreen onClick={back} label="Edit steps" />}
         </div>
       </header>
 
@@ -309,7 +309,7 @@ function Feedback({ run, final, usedAi, onRetry }: { run: BoltRun; final: Kitche
               {peek ? "Hide pro answer" : "Peek at a pro answer"}
             </button>
           )}
-          <Link to="/" className="btn-chunky btn-night">Back to the map</Link>
+          <Link to="/journey" className="btn-chunky btn-night">Back to the map</Link>
         </div>
       </section>
     </>

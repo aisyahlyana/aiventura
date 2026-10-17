@@ -51,7 +51,7 @@ function FixThePrompt() {
             <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-pink-soft">Phase 1 · Game 1</span>
             <StepPills steps={["Lesson", "Practise", "Feedback"]} current={step} label={`Step ${step + 1} of 3: ${["Lesson", "Practise", "Feedback"][step]}`} />
           </div>
-          {screen === "intro" ? <BackLink to="/" label="Journey map" /> : <BackScreen onClick={back} label="Back" />}
+          {screen === "intro" ? <BackLink to="/journey" label="Journey map" /> : <BackScreen onClick={back} label="Back" />}
         </div>
       </header>
 
@@ -383,7 +383,7 @@ function Practise({ checked, picked, onPick, onRemove, onCheck, onRetry }: {
               <button type="button" className="btn-chunky tone-white" style={{ boxShadow: "0 4px 0 var(--sun-edge)" }} onClick={onRetry}>
                 Try again
               </button>
-              <Link to="/" className="btn-chunky btn-night">Back to the map</Link>
+              <Link to="/journey" className="btn-chunky btn-night">Back to the map</Link>
             </div>
           </section>
 

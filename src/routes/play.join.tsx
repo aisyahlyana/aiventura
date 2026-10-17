@@ -105,7 +105,7 @@ function Join() {
                 Room {formatCode(room.code)}
               </span>
             )}
-            {stage === "join" ? <BackLink to="/" label="Back" /> : <BackScreen onClick={goBack} label="Back" />}
+            {stage === "join" ? <BackLink to="/journey" label="Back" /> : <BackScreen onClick={goBack} label="Back" />}
           </div>
         </header>
         <main className="flex flex-1 flex-col gap-3 px-[18px] pb-5 pt-2">
