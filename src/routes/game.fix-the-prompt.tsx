@@ -81,21 +81,27 @@ function Lesson({ onDone }: { onDone: () => void }) {
       <div className="flex flex-wrap items-center gap-5">
         <Campi width={96} />
         <div className="min-w-0 flex-[1_1_380px]">
-          <div className="kicker text-blue-deep">Quick lesson game</div>
+          <div className="kicker text-blue-deep">Step 1 · Quick lesson</div>
           <h2 className="m-0 mt-1 font-display text-[32px] leading-[38px]">The parts of a good prompt</h2>
-          <p className="m-0 mt-1.5 text-[17px] font-bold leading-6 text-ink-muted">A prompt is what you ask the AI. Good prompts have four parts. Can you spot them?</p>
+          <p className="m-0 mt-1.5 text-[17px] font-bold leading-6 text-ink-muted">A prompt is what you ask the AI. Good prompts have four parts. Let's find them!</p>
         </div>
         <div className="flex gap-1" role="img" aria-label={`${earned} of 5 class stars`}>
           {[0, 1, 2, 3, 4].map((i) => <StarIcon key={i} size={30} filled={i < earned} />)}
         </div>
       </div>
 
+      <ol className="m-0 flex list-none flex-col gap-2 rounded-[18px] bg-sun-tint p-4 text-[17px] font-bold leading-6">
+        <li><strong>1.</strong> Read the short prompt and the better prompt below.</li>
+        <li><strong>2.</strong> The better prompt is split into four pieces. One piece has a <strong>dashed outline</strong>.</li>
+        <li><strong>3.</strong> Tap the card underneath that says what job that piece does. Do it for all four pieces.</li>
+      </ol>
+
       <div className="flex flex-col gap-3 rounded-[18px] bg-surface-soft px-5 py-[18px]">
         <div className="flex flex-wrap items-baseline gap-2.5">
-          <span className="text-[13px] font-black uppercase tracking-[.1em] text-ink-muted">Before</span>
+          <span className="text-[13px] font-black uppercase tracking-[.1em] text-ink-muted">Short prompt</span>
           <span className="text-lg font-bold text-ink-muted">“Tell me about volcanoes.”</span>
         </div>
-        <div className="text-[13px] font-black uppercase tracking-[.1em] text-blue-deep">After: a much better prompt</div>
+        <div className="text-[13px] font-black uppercase tracking-[.1em] text-blue-deep">Better prompt (same question, with four parts added)</div>
         <div className="flex flex-wrap gap-2.5">
           {PARTS.map((p) => {
             const isSolved = solved.includes(p.id), cur = p.id === curId;
