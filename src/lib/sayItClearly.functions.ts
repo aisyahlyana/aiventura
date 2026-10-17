@@ -23,9 +23,15 @@ export const runBolt = createServerFn({ method: "POST" })
     const prompt = buildBoltPrompt(steps);
     try {
       const text = await askAi(prompt);
-      if (!text) return { ok: false as const, error: "AI is not set up." };
+      if (!text) {
+        console.error("runBolt failed: AI returned no text");
+        return { ok: false as const, error: "AI is not set up." };
+      }
       const json = parseJson(text);
-      if (!json) return { ok: false as const, error: "Bolt's answer didn't make sense." };
+      if (!json) {
+        console.error("runBolt failed: AI reply was not valid JSON", { replyLength: text.length });
+        return { ok: false as const, error: "Bolt's answer didn't make sense." };
+      }
       return { ok: true as const, run: normalizeRun(json, steps) };
     } catch (e) {
       console.error("runBolt failed", e);
@@ -52,19 +58,38 @@ async function askAi(prompt: string): Promise<string | null> {
 
   const lovableKey = process.env["LOVABLE_API_KEY"];
   if (lovableKey) {
+    const model = process.env["BOLT_MODEL"] || "google/gemini-2.5-flash";
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
-      headers: { "content-type": "application/json", authorization: `Bearer ${lovableKey}` },
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${lovableKey}`,
+        "X-Lovable-AIG-SDK": "fetch",
+      },
       body: JSON.stringify({
-        model: process.env["BOLT_MODEL"] || "google/gemini-2.5-flash",
+        model,
         messages: [{ role: "user", content: prompt }],
       }),
     });
-    if (!res.ok) throw new Error(`Lovable AI ${res.status}: ${await res.text()}`);
-    const body = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-    return body.choices?.[0]?.message?.content ?? "";
+    const runId = res.headers.get("X-Lovable-AIG-Run-ID");
+    if (!res.ok) {
+      const detail = (await res.text()).split(lovableKey).join("[redacted]");
+      console.error("runBolt: Lovable AI request failed", { status: res.status, model, runId, detail });
+      throw new Error(`Lovable AI ${res.status}: ${detail}`);
+    }
+    const body = (await res.json()) as { choices?: { finish_reason?: string; message?: { content?: string; refusal?: string } }[] };
+    const choice = body.choices?.[0];
+    if (choice?.message?.refusal || !choice?.message?.content?.trim()) {
+      console.error("runBolt: Lovable AI returned no answer", {
+        status: res.status, model, runId, finishReason: choice?.finish_reason,
+        refusal: choice?.message?.refusal,
+      });
+      throw new Error("Lovable AI returned no answer.");
+    }
+    return choice.message.content;
   }
 
+  console.error("runBolt: AI is not configured; ANTHROPIC_API_KEY and LOVABLE_API_KEY are both missing");
   return null;
 }
 
