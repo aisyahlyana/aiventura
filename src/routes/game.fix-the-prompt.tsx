@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Campi, StarPage, StepPills } from "@/components/brand/Brand";
 import { BackIcon, CheckIcon, CrossIcon, GripIcon, LockIcon, PlayIcon, PlusIcon, PrintIcon, StarIcon, WrenchIcon } from "@/components/brand/Icons";
-import { ASK_ORDER, PARTS, PIECES, SCORE_NOTES, START_PROMPT, scorePrompt } from "@/lib/fixPrompt";
+import { PARTS, PIECES, SCORE_NOTES, START_PROMPT, scorePrompt, type PartId } from "@/lib/fixPrompt";
 import { completeStep } from "@/lib/journey";
 
 export const Route = createFileRoute("/game/fix-the-prompt")({
@@ -62,20 +62,22 @@ function FixThePrompt() {
 
 function Lesson({ onDone }: { onDone: () => void }) {
   const [intro, setIntro] = useState(true);
-  const [qi, setQi] = useState(0);
+  const [sel, setSel] = useState<PartId | null>(null);
+  const [solved, setSolved] = useState<PartId[]>([]);
   const [wrong, setWrong] = useState<string | null>(null);
   const [lastRight, setLastRight] = useState<string | null>(null);
   const [safe, setSafe] = useState<"add" | "skip" | null>(null);
-  const curId = ASK_ORDER[qi];
-  const solved = ASK_ORDER.slice(0, qi);
-  const quizDone = qi >= ASK_ORDER.length;
-  const earned = qi + (safe === "skip" ? 1 : 0);
+  const quizDone = solved.length >= PARTS.length;
+  const earned = solved.length + (safe === "skip" ? 1 : 0);
   const last = PARTS.find((p) => p.id === lastRight);
-  const fbText = wrong
-    ? "Not quite! Read the dashed words again, then try another part."
-    : last
-      ? `Yes! “${last.text}” is part ${last.n}: ${last.name} Next one!`
-      : "Tap the card that matches the dashed piece.";
+  const selPart = PARTS.find((p) => p.id === sel);
+  const fbText = wrong === "none"
+    ? "First tap a piece of the prompt above, then choose what it does."
+    : wrong
+      ? "Not quite! Try another job card."
+      : last
+        ? `Yes! “${last.text}” is part ${last.n}: ${last.name} Now tap another piece.`
+        : "Tap a piece of the prompt, then tap the card that says what it does.";
 
   if (intro) {
     return (
@@ -83,7 +85,7 @@ function Lesson({ onDone }: { onDone: () => void }) {
         <Campi width={110} />
         <span className="font-display text-[22px] leading-[28px] text-ink-muted">Here is a short prompt:</span>
         <span className="font-display text-[40px] leading-[48px]">“Tell me about volcanoes.”</span>
-        <p className="m-0 max-w-[520px] text-[19px] font-bold leading-[27px] text-ink-muted">It isn't very specific, so the AI may not give you a helpful answer.</p>
+        <p className="m-0 max-w-[520px] text-[19px] font-bold leading-[27px] text-ink-muted">It's too short — the AI has to guess what you really want, so the answer may not help you.</p>
         <button type="button" className="btn-chunky tone-pink min-w-[240px] !px-8 !py-4 !text-2xl" onClick={() => setIntro(false)}>
           Let's fix it!
         </button>
@@ -104,7 +106,7 @@ function Lesson({ onDone }: { onDone: () => void }) {
       </div>
 
       <div className="flex flex-col gap-3 rounded-[18px] bg-surface-soft px-5 py-[18px]">
-        <div className="font-display text-[24px] leading-[30px] text-blue-deep">Here is a more specific prompt. Match each part to what it does!</div>
+        <div className="font-display text-[24px] leading-[30px] text-blue-deep">Here is the same prompt, with more parts added. Match each piece to its job!</div>
         <div className="flex flex-wrap gap-2.5">
           {PARTS.map((p) => {
             const isSolved = solved.includes(p.id), cur = p.id === curId;
