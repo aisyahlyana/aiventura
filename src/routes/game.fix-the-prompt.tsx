@@ -199,7 +199,7 @@ function Practise({ checked, onCheck, onRetry }: { checked: boolean; onCheck: ()
   const add = (id: string) => { setPicked((ps) => (ps.includes(id) ? ps : [...ps, id])); setOver(false); };
   const tiles = PIECES.filter((p) => !picked.includes(p.id));
   const right = scorePrompt(picked);
-  const promptText = [START_PROMPT, ...picked.map((id) => byId[id].text)].join(" ");
+  const promptText = [START_PROMPT, ...picked.map((id) => byId[id]!.text)].join(" ");
 
   return (
     <>
@@ -220,7 +220,7 @@ function Practise({ checked, onCheck, onRetry }: { checked: boolean; onCheck: ()
               <div className="rounded-2xl bg-blue-tint px-[18px] py-4 text-[22px] font-bold leading-8" aria-live="polite">
                 <span>{START_PROMPT}</span>
                 {picked.map((id) => (
-                  <span key={id} className="ml-1 rounded-lg bg-sun-tint px-1.5">{byId[id].text}</span>
+                  <span key={id} className="ml-1 rounded-lg bg-sun-tint px-1.5">{byId[id]!.text}</span>
                 ))}
               </div>
               <div
@@ -235,10 +235,10 @@ function Practise({ checked, onCheck, onRetry }: { checked: boolean; onCheck: ()
                 )}
                 {picked.map((id) => (
                   <div key={id} className="flex items-center gap-2.5 rounded-[14px] border-2 border-b-4 border-pink bg-surface py-2.5 pl-4 pr-2.5">
-                    <span className="flex-1 text-[17px] font-extrabold leading-[23px]">{byId[id].text}</span>
+                    <span className="flex-1 text-[17px] font-extrabold leading-[23px]">{byId[id]!.text}</span>
                     <button
                       type="button"
-                      aria-label={`Remove: ${byId[id].text}`}
+                      aria-label={`Remove: ${byId[id]!.text}`}
                       className="focus-ring flex h-9 w-9 flex-none items-center justify-center rounded-full border-0 bg-pink-tint"
                       onClick={() => setPicked((ps) => ps.filter((x) => x !== id))}
                     >

@@ -8,7 +8,7 @@ import { NICKNAMES, formatCode, normaliseCode } from "@/lib/play";
 import { MAX_PROMPT_LENGTH, checkPrompt } from "@/lib/safety";
 
 export const Route = createFileRoute("/play/join")({
-  validateSearch: (s: Record<string, unknown>) => ({ code: typeof s.code === "string" ? s.code : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({ code: typeof s["code"] === "string" ? s["code"] : undefined }),
   head: () => ({
     meta: [
       { title: "Join the game · aiventura" },
@@ -60,7 +60,7 @@ function Join() {
     if (!room || !team) return;
     setBusy(true); setError(null);
     try {
-      const r = await joinTeamFn({ data: { roomId: room.id, teamId: team.id, nickname: NICKNAMES[nick % NICKNAMES.length] } });
+      const r = await joinTeamFn({ data: { roomId: room.id, teamId: team.id, nickname: NICKNAMES[nick % NICKNAMES.length]! } });
       if (!r.ok) setError(r.error);
       else { setPlayerId(r.playerId); setStage("write"); }
     } catch { setError("Couldn't connect. Try again."); }

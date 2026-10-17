@@ -57,7 +57,7 @@ function JourneyMap() {
             const done = gi < progress, cur = gi === progress, locked = gi > progress;
             const isOpen = open === gi;
             const size = l.challenge ? 92 : 76;
-            const dx = DX[li];
+            const dx = DX[li] ?? 0;
             const tone = locked ? "tone-locked" : ph.tone;
             const status = done ? "done" : cur ? "next up" : "locked";
             return (

@@ -29,11 +29,11 @@ export function buildDrawing(text: string, guess: Partial<Drawing> = {}): Drawin
   const botM = new RegExp(`\\b(${WORDS})\\s+(trousers|pants|jeans|skirt|shorts)\\b`).exec(low);
   const isJeans = /\bjeans\b/.test(low);
   const hairStyle = /\blong\b/.test(low) ? "long" : /\bbun\b/.test(low) ? "bun" : /\b(short|wavy|curly)\b/.test(low) ? "wavy" : guess.hairStyle ?? "bun";
-  const hair = hairM ? COL[hairM[1]] : guess.hair ?? "#9aa3b2";
-  const shirt = shirtM ? COL[shirtM[1]] : guess.shirt ?? "#4f9d69";
+  const hair = hairM ? COL[hairM[1]!]! : guess.hair ?? "#9aa3b2";
+  const shirt = shirtM ? COL[shirtM[1]!]! : guess.shirt ?? "#4f9d69";
   const bottomWord = botM ? botM[2] : isJeans ? "jeans" : guess.bottomType ?? "skirt";
   const bottomType = bottomWord === "skirt" ? "skirt" : "trousers";
-  const bottom = botM ? COL[botM[1]] : isJeans ? "#4a6fa5" : guess.bottom ?? "#2f4473";
+  const bottom = botM ? COL[botM[1]!]! : isJeans ? "#4a6fa5" : guess.bottom ?? "#2f4473";
   const glasses = /\bglasses\b/.test(low) || !!guess.glasses;
   const styleWord = hairStyle === "long" ? "long" : hairStyle === "bun" ? "a bun of" : "short wavy";
   const alt = `AI drawing of a teacher with ${styleWord} hair, a ${shirtM ? shirtM[1] : "guessed"} top and ${
