@@ -6,7 +6,7 @@ import { PHASES, STARS_PER_STEP, TOTAL_STEPS, useProgress } from "@/lib/journey"
 import { useCameFrom } from "@/lib/back";
 import { BackLink } from "@/components/brand/BackButton";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/journey")({
   head: () => ({
     meta: [
       { title: "aiventura · Journey map" },
