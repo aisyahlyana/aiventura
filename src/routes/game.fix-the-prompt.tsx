@@ -77,7 +77,7 @@ function Lesson({ onDone }: { onDone: () => void }) {
       ? "Not quite! Try another job card."
       : last
         ? `Yes! “${last.text}” is part ${last.n}: ${last.name} Now tap another piece.`
-        : "Tap a piece of the prompt, then tap the card that says what it does.";
+        : null;
 
   if (intro) {
     return (
@@ -144,7 +144,7 @@ function Lesson({ onDone }: { onDone: () => void }) {
             className={`flex flex-wrap items-center gap-3 rounded-2xl px-4 py-3.5 ${wrong && wrong !== "none" ? "bg-pink-tint" : last ? "bg-blue-tint" : "bg-sun-tint"}`}
           >
             <div className="font-display text-[22px] leading-7">{selPart ? "What does this part do?" : "Choose a piece"}</div>
-            <div className="flex-[1_1_260px] text-base font-bold leading-[23px]">{fbText}</div>
+            {fbText && <div className="flex-[1_1_260px] text-base font-bold leading-[23px]">{fbText}</div>}
           </div>
           <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))" }}>
             {PARTS.map((p) => (
