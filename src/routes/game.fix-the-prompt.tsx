@@ -48,7 +48,7 @@ function FixThePrompt() {
       <header className="relative border-b-2 border-white/15">
         <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-4 px-6 py-4">
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-pink-soft">Phase 1 · Game 1</span>
+            <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-ink-muted">Phase 1 · Game 1</span>
             <StepPills steps={["Lesson", "Practise", "Feedback"]} current={step} label={`Step ${step + 1} of 3: ${["Lesson", "Practise", "Feedback"][step]}`} />
           </div>
           {screen === "intro" ? <BackLink to="/journey" label="Journey map" /> : <BackScreen onClick={back} label="Back" />}
@@ -57,12 +57,12 @@ function FixThePrompt() {
 
       <main className="relative mx-auto flex max-w-[1100px] flex-col gap-6 px-6 pb-[72px] pt-7">
         <div className="flex flex-wrap items-center gap-[18px]">
-          <div className="tone-pink flex h-[72px] w-[72px] flex-none items-center justify-center rounded-full" style={{ background: "var(--face)", boxShadow: "0 6px 0 var(--edge)" }}>
+          <div className="tone-pink flex h-[72px] w-[72px] flex-none items-center justify-center rounded-full" style={{ background: "var(--face)", boxShadow: "6px 6px 0 var(--ink)" }}>
             <WrenchIcon />
           </div>
           <div className="min-w-0 flex-[1_1_360px]">
-            <h1 className="m-0 font-display text-[44px] leading-[50px] text-surface">Fix the Prompt</h1>
-            <p className="m-0 mt-1 text-[17px] font-bold leading-6 text-sky-text">Find out what makes a prompt work well. Pick the pieces that really help.</p>
+            <h1 className="m-0 font-display text-[44px] leading-[50px] title-ground">Fix the Prompt</h1>
+            <p className="m-0 mt-1 text-[17px] font-bold leading-6 text-ink-muted">Find out what makes a prompt work well. Pick the pieces that really help.</p>
           </div>
         </div>
 
@@ -186,7 +186,7 @@ function LessonMatch({ solved, onSolve, safe, onSafe, onDone }: {
                 key={p.id}
                 type="button"
                 className={`${p.tone} focus-ring flex flex-col gap-1.5 rounded-[18px] border-[3px] px-4 py-3.5 text-left transition-transform active:translate-y-1`}
-                style={{ borderColor: wrong === p.id ? "var(--pink-edge)" : "var(--tint)", background: "var(--tint)", boxShadow: "0 5px 0 var(--face)" }}
+                style={{ borderColor: wrong === p.id ? "var(--pink-edge)" : "var(--tint)", background: "var(--tint)", boxShadow: "5px 5px 0 var(--ink)" }}
                 onClick={() => {
                   if (!sel) { setWrong("none"); setLastRight(null); return; }
                   if (p.id === sel) { onSolve(p.id); setSel(null); setWrong(null); setLastRight(p.id); }
@@ -205,7 +205,7 @@ function LessonMatch({ solved, onSolve, safe, onSafe, onDone }: {
       {quizDone && (
         <div className="tone-lilac flex flex-col gap-3.5 rounded-[18px] bg-lilac-tint px-5 py-[18px]">
           <div className="flex flex-wrap items-center gap-3.5">
-            <div className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-lilac" style={{ boxShadow: "0 3px 0 var(--lilac-edge)" }}>
+            <div className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-lilac" style={{ boxShadow: "3px 3px 0 var(--ink)" }}>
               <LockIcon />
             </div>
             <div className="min-w-0 flex-[1_1_300px]">
@@ -216,7 +216,7 @@ function LessonMatch({ solved, onSolve, safe, onSafe, onDone }: {
           <div className="rounded-xl bg-surface px-3.5 py-3 text-[19px] font-extrabold leading-[26px]">“My name is Leo and I go to Sunny Hill School.”</div>
           {safe !== "skip" && (
             <div className="flex flex-wrap gap-3">
-              <button type="button" className="btn-chunky tone-white flex-[1_1_180px]" style={{ boxShadow: "0 4px 0 var(--lilac)" }} onClick={() => onSafe("add")}>Add it</button>
+              <button type="button" className="btn-chunky tone-white flex-[1_1_180px]" style={{ boxShadow: "4px 4px 0 var(--ink)" }} onClick={() => onSafe("add")}>Add it</button>
               <button type="button" className="btn-chunky flex-[1_1_180px]" onClick={() => onSafe("skip")}>Leave it out</button>
             </div>
           )}
@@ -319,7 +319,7 @@ function Practise({ checked, picked, onPick, onRemove, onCheck, onRetry }: {
                   onClick={() => onPick(t.id)}
                   aria-label={`Add to prompt: ${t.text}`}
                   className="focus-ring flex w-full cursor-grab items-center gap-3 rounded-2xl border-0 bg-pink-soft px-4 py-3.5 text-left text-[17px] font-extrabold leading-[23px] transition-transform active:translate-y-1"
-                  style={{ boxShadow: "0 4px 0 var(--pink-edge)" }}
+                  style={{ boxShadow: "4px 4px 0 var(--ink)" }}
                 >
                   <GripIcon />
                   <span className="flex-1">{t.text}</span>
@@ -380,7 +380,7 @@ function Practise({ checked, picked, onPick, onRemove, onCheck, onRetry }: {
               <p className="m-0 mt-1 font-display text-[28px] leading-[35px]">More information isn't always better. Relevant information is what matters.</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <button type="button" className="btn-chunky tone-white" style={{ boxShadow: "0 4px 0 var(--sun-edge)" }} onClick={onRetry}>
+              <button type="button" className="btn-chunky tone-white" style={{ boxShadow: "4px 4px 0 var(--ink)" }} onClick={onRetry}>
                 Try again
               </button>
               <Link to="/journey" className="btn-chunky btn-night">Back to the map</Link>

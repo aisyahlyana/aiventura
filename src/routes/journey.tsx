@@ -82,7 +82,7 @@ function JourneyMap() {
                   aria-label={`${l.title}, ${status}`}
                   aria-expanded={isOpen}
                   className="focus-ring relative flex items-center justify-center rounded-full border-0 p-0 transition-transform active:translate-y-2 active:!shadow-none"
-                  style={{ width: size, height: size, background: "var(--face)", boxShadow: "0 8px 0 var(--edge)" }}
+                  style={{ width: size, height: size, background: "var(--face)", boxShadow: "8px 8px 0 var(--ink)" }}
                 >
                   {locked && <LockIcon size={30} color="var(--ink-locked)" />}
                   {!locked && l.challenge && <TrophyIcon />}
@@ -164,7 +164,7 @@ function JourneyMap() {
         <div className="card-raised flex flex-wrap items-center gap-5 p-6">
           <div
             className={`${finished ? "tone-sun" : "tone-locked"} flex h-[72px] w-[72px] flex-none items-center justify-center rounded-full`}
-            style={{ background: "var(--face)", boxShadow: "0 6px 0 var(--edge)" }}
+            style={{ background: "var(--face)", boxShadow: "6px 6px 0 var(--ink)" }}
           >
             <FlagIcon size={36} />
           </div>

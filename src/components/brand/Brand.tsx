@@ -1,52 +1,26 @@
 import type { ReactNode } from "react";
-import campiAsset from "@/assets/campi-color.svg.asset.json";
-import wordmarkAsset from "@/assets/aiventura-wordmark-color.svg.asset.json";
+import boltAsset from "@/assets/bolt-mark.svg.asset.json";
 
-export function Campi({ width = 96, alt = "Campi the tent", className }: { width?: number; alt?: string; className?: string }) {
-  return <img src={campiAsset.url} alt={alt} width={width} style={{ width, height: "auto" }} className={className} />;
+/** Bolt, the robot who does exactly what the class writes. Name kept for existing call sites. */
+export function Campi({ width = 96, alt = "Bolt the robot", className }: { width?: number; alt?: string; className?: string }) {
+  const w = Math.max(width, 57); // never smaller than 64px tall
+  return <img src={boltAsset.url} alt={alt} width={w} style={{ width: w, height: "auto" }} className={className} />;
 }
+export const Bolt = Campi;
 
+/** Two-colour bubble wordmark: "ai" coral, "ventura" golden, ink outline and drop. */
 export function Wordmark({ height = 92 }: { height?: number }) {
-  return <img src={wordmarkAsset.url} alt="aiventura" style={{ height, width: "auto", maxWidth: "100%" }} className="block" />;
-}
-
-const STAR_TINTS = ["#ffffff", "#ffffff", "var(--sun)", "var(--sky)", "var(--pink-soft)"];
-
-function makeStars(count: number, seed0: number) {
-  let seed = seed0;
-  const rnd = () => {
-    seed = (seed * 9301 + 49297) % 233280;
-    return seed / 233280;
-  };
-  return Array.from({ length: count }, () => ({
-    x: rnd() * 96 + 1,
-    y: rnd() * 97 + 1,
-    size: Math.round(6 + rnd() * 8),
-    o: 0.45 + rnd() * 0.45,
-    c: STAR_TINTS[Math.floor(rnd() * STAR_TINTS.length)],
-  }));
-}
-
-/** Navy page with ~20 tiny four-point stars. Deterministic so SSR matches. */
-export function StarPage({ children, seed = 7, count = 20 }: { children: ReactNode; seed?: number; count?: number }) {
-  const stars = makeStars(count, seed);
+  const size = Math.round(height * 0.62);
   return (
-    <div className="relative min-h-screen overflow-hidden bg-navy text-navy">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        {stars.map((s, i) => (
-          <svg
-            key={i}
-            viewBox="0 0 20 20"
-            className="absolute"
-            style={{ left: `${s.x}%`, top: `${s.y}%`, width: s.size, height: s.size, opacity: s.o }}
-          >
-            <path d="M10 0 C11 7 13 9 20 10 C13 11 11 13 10 20 C9 13 7 11 0 10 C7 9 9 7 10 0Z" fill={s.c} />
-          </svg>
-        ))}
-      </div>
-      {children}
-    </div>
+    <span className="wordmark block" style={{ fontSize: size }} aria-label="aiventura" role="img">
+      <span className="wordmark-ai">ai</span><span className="wordmark-ventura">ventura</span>
+    </span>
   );
+}
+
+/** Sky-blue page with the brand's dotted ground. */
+export function StarPage({ children }: { children: ReactNode; seed?: number; count?: number }) {
+  return <div className="sky-ground relative min-h-screen overflow-hidden text-navy">{children}</div>;
 }
 
 export function StepPills({ steps, current, label }: { steps: string[]; current: number; label: string }) {
@@ -55,7 +29,7 @@ export function StepPills({ steps, current, label }: { steps: string[]; current:
       {steps.map((s, i) => (
         <span
           key={s}
-          className={`pill ${i === current ? "bg-pink-soft" : i < current ? "bg-sky" : "bg-line"}`}
+          className={`pill ${i === current ? "bg-sun" : i < current ? "bg-lilac" : "bg-surface"}`}
           aria-current={i === current ? "step" : undefined}
         >
           {i + 1} {s}
