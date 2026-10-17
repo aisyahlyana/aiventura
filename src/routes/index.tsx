@@ -121,7 +121,7 @@ function JourneyMap() {
                           else { setProgress(gi + 1); setOpen(null); }
                         }}
                       >
-                        {l.challenge ? "Start challenge" : "Start"}
+                        {l.challenge ? "Start challenge" : "Start lesson"}
                       </button>
                     )}
                     {done && (
