@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as GameFixThePromptRouteImport } from './routes/game.fix-the-prompt'
 import { Route as PlayHostRouteImport } from './routes/play.host'
 import { Route as PlayJoinRouteImport } from './routes/play.join'
 import { Route as PrintFixThePromptRouteImport } from './routes/print.fix-the-prompt'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const JourneyRoute = JourneyRouteImport.update({
   id: '/journey',
   path: '/journey',
@@ -42,6 +48,7 @@ const PrintFixThePromptRoute = PrintFixThePromptRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/journey': typeof JourneyRoute
   '/game/fix-the-prompt': typeof GameFixThePromptRoute
   '/play/host': typeof PlayHostRoute
@@ -49,6 +56,7 @@ export interface FileRoutesByFullPath {
   '/print/fix-the-prompt': typeof PrintFixThePromptRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/journey': typeof JourneyRoute
   '/game/fix-the-prompt': typeof GameFixThePromptRoute
   '/play/host': typeof PlayHostRoute
@@ -57,6 +65,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/journey': typeof JourneyRoute
   '/game/fix-the-prompt': typeof GameFixThePromptRoute
   '/play/host': typeof PlayHostRoute
@@ -66,6 +75,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/journey'
     | '/game/fix-the-prompt'
     | '/play/host'
@@ -73,6 +83,7 @@ export interface FileRouteTypes {
     | '/print/fix-the-prompt'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/journey'
     | '/game/fix-the-prompt'
     | '/play/host'
@@ -80,6 +91,7 @@ export interface FileRouteTypes {
     | '/print/fix-the-prompt'
   id:
     | '__root__'
+    | '/'
     | '/journey'
     | '/game/fix-the-prompt'
     | '/play/host'
@@ -88,6 +100,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   JourneyRoute: typeof JourneyRoute
   GameFixThePromptRoute: typeof GameFixThePromptRoute
   PlayHostRoute: typeof PlayHostRoute
@@ -97,6 +110,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/journey': {
       id: '/journey'
       path: '/journey'
@@ -136,6 +156,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   JourneyRoute: JourneyRoute,
   GameFixThePromptRoute: GameFixThePromptRoute,
   PlayHostRoute: PlayHostRoute,
