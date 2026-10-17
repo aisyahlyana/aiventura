@@ -440,3 +440,14 @@
 .cover-star-17 { left: 47%; top: 83%; width: 10px; height: 10px; --star-duration: 4.0s; --star-delay: 0.07s; }
 .cover-star-18 { left: 84%; top: 85%; width: 12px; height: 12px; --star-duration: 2.4s; --star-delay: 0.78s; }
 .cover-star-19 { left: 96%; top: 76%; width: 14px; height: 14px; --star-duration: 2.6s; --star-delay: 1.49s; }
+
+@media (max-width: 600px) and (max-height: 740px) {
+  .cover-content { padding-top: 24px; padding-bottom: 10px; }
+  .cover-logo { width: 180px; }
+  .cover-wordmark { font-size: 33px; }
+  .cover-tagline { margin-top: 16px; font-size: 26px; }
+  .cover-subline { margin-top: 12px; font-size: 17px; }
+  .cover-cta-entrance { margin-top: 20px; }
+  .cover-secondary { margin-top: 12px; gap: 6px; }
+  .cover-footer { padding-bottom: 68px; }
+}
