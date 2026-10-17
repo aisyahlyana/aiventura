@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { Campi, Wordmark } from "@/components/brand/Brand";
-import { BackIcon, PrintIcon } from "@/components/brand/Icons";
+import { BackLink } from "@/components/brand/BackButton";
+import { PrintIcon } from "@/components/brand/Icons";
 import { PARTS, PIECES, PRACTICES, WORKSHEET_KEY, type Practice } from "@/lib/fixPrompt";
 
 export const Route = createFileRoute("/print/fix-the-prompt")({
@@ -22,13 +23,13 @@ function PrintPack() {
   return (
     <div className="print-root min-h-screen bg-navy px-4 pb-10">
       <div className="no-print mx-auto flex max-w-[210mm] flex-wrap items-center justify-between gap-3 py-5">
-        <Link to="/game/fix-the-prompt" className="btn-chunky tone-white !px-4 !py-2.5 !text-[15px]" style={{ boxShadow: "0 4px 0 var(--night-edge)" }}>
-          <BackIcon /> Back to the game
-        </Link>
         <span className="text-[15px] font-extrabold text-sky-text">12 A4 pages · print one per sheet</span>
-        <button type="button" className="btn-chunky tone-sun" onClick={() => window.print()}>
-          <PrintIcon size={22} /> Print
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <BackLink to="/game/fix-the-prompt" label="Back to the game" />
+          <button type="button" className="btn-chunky tone-sun" onClick={() => window.print()}>
+            <PrintIcon size={22} /> Print
+          </button>
+        </div>
       </div>
       <TeacherGuide />
       <Worksheet />

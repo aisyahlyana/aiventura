@@ -4,6 +4,7 @@ import QRCode from "qrcode";
 import { useServerFn } from "@tanstack/react-start";
 import { hostGetState, hostOpenRoom, hostSendLive, hostUpdateRoom } from "@/lib/play.functions";
 import { StarPage, StepPills, Wordmark } from "@/components/brand/Brand";
+import { BackLink } from "@/components/brand/BackButton";
 import { CheckIcon, HeartIcon, LockIcon, ShieldIcon, StarIcon } from "@/components/brand/Icons";
 import { PartChips, SafetyPanel } from "@/components/play/PromptChecks";
 import { TeacherDrawing } from "@/components/play/TeacherDrawing";
@@ -63,6 +64,7 @@ function HostHeader({ stage }: { stage: Stage | null }) {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {stage && <StepPills steps={["Join", "Write", "Reveal"]} current={idx} label={`Stage ${idx + 1} of 3: ${["Join", "Write", "Reveal"][idx]}`} />}
+          <BackLink to="/" label="Journey map" />
         </div>
       </div>
     </header>
