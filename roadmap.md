@@ -9,5 +9,5 @@
 - [x] Verify connection tests and the requested two-step round without changing the game.
 
 # Classroom game chooser
-- [ ] Replace the classroom entry with a game chooser and coming-soon placeholders.
-- [ ] Verify the sandwich launch and return path, availability tests and page layout.
+- [x] Replace the classroom entry with a game chooser and coming-soon placeholders.
+- [x] Verify the sandwich launch and return path, availability tests and page layout.

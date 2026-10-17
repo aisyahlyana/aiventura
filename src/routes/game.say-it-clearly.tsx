@@ -13,7 +13,7 @@ import {
 import { runBolt } from "@/lib/sayItClearly.functions";
 
 export const Route = createFileRoute("/game/say-it-clearly")({
-  validateSearch: (search: Record<string, unknown>) => ({ classPlay: search.classPlay === true || search.classPlay === "true" }),
+  validateSearch: (search: Record<string, unknown>) => ({ classPlay: search["classPlay"] === true || search["classPlay"] === "true" }),
   head: () => ({
     meta: [
       { title: "Say It Clearly · aiventura" },
