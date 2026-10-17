@@ -189,6 +189,16 @@
   letter-spacing: 0.02em;
 }
 
+/* Same outlined bubble title, filled with brand coral. */
+@utility title-coral {
+  color: var(--coral);
+  -webkit-text-stroke: 0.16em var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 0.09em 0 var(--ink);
+  letter-spacing: 0.02em;
+}
+
+
 @utility kicker { font-weight: 700; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); }
 
 @utility card-raised { background: var(--surface); border: 4px solid var(--ink); border-radius: 28px; box-shadow: var(--shadow-lg); }
