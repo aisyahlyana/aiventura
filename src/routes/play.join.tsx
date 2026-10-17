@@ -101,7 +101,7 @@ function Join() {
           <Wordmark height={40} />
           <div className="flex items-center gap-2.5">
             {room && (
-              <span className="text-[13px] font-extrabold uppercase tracking-[.08em] text-pink-soft">
+              <span className="text-[13px] font-extrabold uppercase tracking-[.08em] text-ink-muted">
                 Room {formatCode(room.code)}
               </span>
             )}
@@ -115,8 +115,8 @@ function Join() {
             <>
               <div className="mt-10 flex flex-col items-center gap-2.5 text-center">
                 <Campi width={130} />
-                <h1 className="m-0 font-display text-[32px] leading-[38px] text-surface">Join the game</h1>
-                <p className="m-0 text-base font-bold leading-[23px] text-sky-text">Type the room code from the big screen.</p>
+                <h1 className="m-0 font-display text-[32px] leading-[38px] title-ground">Join the game</h1>
+                <p className="m-0 text-base font-bold leading-[23px] text-ink-muted">Type the room code from the big screen.</p>
               </div>
               <form className="card-raised flex flex-col gap-3.5 p-5" onSubmit={(e) => { e.preventDefault(); doJoin(); }}>
                 <label htmlFor="code" className="text-[13px] font-black uppercase tracking-[.1em] text-ink-muted">Room code</label>
@@ -142,7 +142,7 @@ function Join() {
                 <button type="button" className="btn-ghost" onClick={() => setNick(nick + 1)}>Shuffle</button>
                 <div className="text-sm font-bold text-ink-muted">We never use your real name.</div>
               </div>
-              <h2 className="m-0 mt-1 font-display text-2xl leading-[30px] text-surface">Pick your team</h2>
+              <h2 className="m-0 mt-1 font-display text-2xl leading-[30px] title-ground">Pick your team</h2>
               <div className="grid grid-cols-2 gap-3">
                 {teams.map((t) => {
                   const chosen = team?.id === t.id;
@@ -153,7 +153,7 @@ function Join() {
                       aria-pressed={chosen}
                       onClick={() => setTeam(t)}
                       className={`${TONE[t.color] ?? "tone-blue"} focus-ring min-h-[92px] rounded-[18px] border-4 p-2.5 font-display text-[19px] leading-[23px] transition-transform active:translate-y-1`}
-                      style={{ background: "var(--face)", borderColor: chosen ? "var(--surface)" : "var(--face)", boxShadow: "0 5px 0 var(--edge)" }}
+                      style={{ background: "var(--face)", borderColor: chosen ? "var(--surface)" : "var(--face)", boxShadow: "5px 5px 0 var(--ink)" }}
                     >
                       {t.name}{chosen ? " ✓" : ""}
                     </button>
@@ -166,7 +166,7 @@ function Join() {
 
           {stage === "write" && (
             <>
-              <div className="card-raised flex flex-col gap-1 px-4 py-3" style={{ boxShadow: "0 5px 0 var(--night-edge)" }}>
+              <div className="card-raised flex flex-col gap-1 px-4 py-3" style={{ boxShadow: "5px 5px 0 var(--ink)" }}>
                 <div className="text-[12px] font-black uppercase tracking-[.1em] text-pink-deep">Team mission · {team?.name}</div>
                 <div className="font-display text-xl leading-[25px]">Write a prompt so the AI can draw our teacher</div>
                 <div className="text-[15px] font-bold leading-5 text-ink-muted">Look at the clues on the big screen. Write in your own words!</div>
@@ -198,14 +198,14 @@ function Join() {
             <>
               <div className="mt-14 flex flex-col items-center gap-3.5 text-center">
                 <Campi width={150} />
-                <h1 className="m-0 font-display text-[32px] leading-[38px] text-surface">Prompt sent!</h1>
-                <p className="m-0 text-[17px] font-bold leading-6 text-sky-text">Great teamwork. Look up at the big screen to see what the AI drew for every team.</p>
+                <h1 className="m-0 font-display text-[32px] leading-[38px] title-ground">Prompt sent!</h1>
+                <p className="m-0 text-[17px] font-bold leading-6 text-ink-muted">Great teamwork. Look up at the big screen to see what the AI drew for every team.</p>
               </div>
               <div className="card-raised px-[18px] py-4">
                 <div className="text-[13px] font-black uppercase tracking-[.1em] text-blue-deep">{team?.name ?? "Your team"} wrote</div>
                 <div className="mt-1.5 text-[17px] font-extrabold leading-6">“{text.trim()}”</div>
               </div>
-              <button type="button" className="btn-chunky tone-white" style={{ boxShadow: "0 4px 0 var(--night-edge)" }} onClick={() => setStage("write")}>Edit our prompt</button>
+              <button type="button" className="btn-chunky tone-white" style={{ boxShadow: "4px 4px 0 var(--ink)" }} onClick={() => setStage("write")}>Edit our prompt</button>
             </>
           )}
         </main>

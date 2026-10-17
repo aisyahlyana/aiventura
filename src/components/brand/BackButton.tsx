@@ -5,7 +5,7 @@ import { BackIcon } from "@/components/brand/Icons";
 export type AppRoute = "/" | "/journey" | "/game/fix-the-prompt" | "/game/say-it-clearly" | "/print/fix-the-prompt" | "/play/host" | "/play/join";
 
 const CLS = "btn-chunky tone-white !px-4 !py-2.5 !text-[15px]";
-const EDGE = { boxShadow: "0 4px 0 var(--night-edge)" } as const;
+const EDGE = { boxShadow: "4px 4px 0 var(--ink)" } as const;
 
 /** Top-right back pill that leaves the current page. */
 export function BackLink({ to, label = "Back", className = "" }: { to: AppRoute; label?: string; className?: string }) {

@@ -1,7 +1,33 @@
-/** Animated inline Campi uses the supplied brand mascot's original paths. */
+/** Stacked logo: animated inline Bolt (supplied brand paths) above the two-colour wordmark. */
 export function CoverLogo() {
+  const ink = "var(--ink)";
   return <div className="cover-logo" role="img" aria-label="aiventura">
-    <div className="cover-campi-wrap"><svg aria-hidden="true" className="cover-campi" viewBox="0 0 228 248"><defs><radialGradient id="cover-campi-glow" cx="50%" cy="45%" r="65%"><stop offset="0" stopColor="var(--campi-glow-center)"/><stop offset="1" stopColor="var(--campi-glow-edge)"/></radialGradient></defs><g transform="translate(-14,7)"><g className="cover-flag"><line x1="128" y1="60" x2="128" y2="16" stroke="var(--surface)" strokeWidth="23" strokeLinecap="round"/></g><g className="cover-flag"><path d="M131,16 L164,27 L131,38 Z" fill="var(--surface)" stroke="var(--surface)" strokeWidth="22" strokeLinejoin="round"/></g><path d="M128,58 L38,210 L218,210 Z" fill="var(--surface)" stroke="var(--surface)" strokeWidth="34" strokeLinejoin="round" transform="translate(0,6)"/><path d="M128,58 L38,210 L218,210 Z" fill="var(--surface)" stroke="var(--surface)" strokeWidth="34" strokeLinejoin="round" transform="translate(0,0)"/><g className="cover-flag"><line x1="128" y1="60" x2="128" y2="16" stroke="var(--navy)" strokeWidth="5" strokeLinecap="round"/></g><g className="cover-flag"><path d="M131,16 L164,27 L131,38 Z" fill="var(--pink)" stroke="var(--pink)" strokeWidth="4" strokeLinejoin="round"/></g><path d="M128,58 L38,210 L218,210 Z" transform="translate(0,6)" fill="var(--blue-edge)" stroke="var(--blue-edge)" strokeWidth="16" strokeLinejoin="round"/><path d="M128,58 L38,210 L218,210 Z" fill="var(--blue)" stroke="var(--blue)" strokeWidth="16" strokeLinejoin="round"/><path d="M128,62 L56,190" stroke="var(--surface)" strokeWidth="5" strokeLinecap="round" opacity=".55"/><path d="M128,106 L78,210 L96,210 Z" fill="var(--pink)" stroke="var(--pink)" strokeWidth="6" strokeLinejoin="round"/><path d="M128,106 L178,210 L160,210 Z" fill="var(--pink)" stroke="var(--pink)" strokeWidth="6" strokeLinejoin="round"/><path d="M128,106 L84,210 L172,210 Z" fill="url(#cover-campi-glow)" stroke="var(--surface)" strokeWidth="5" strokeLinejoin="round" transform="translate(128,158) scale(.86) translate(-128,-158)"/><g className="cover-eyes"><ellipse cx="115.65" cy="170" rx="7.125" ry="9.5" fill="var(--navy)"/><circle cx="118.025" cy="165.725" r="2.4699999999999998" fill="var(--surface)" opacity=".9"/><ellipse cx="140.35" cy="170" rx="7.125" ry="9.5" fill="var(--navy)"/><circle cx="142.725" cy="165.725" r="2.4699999999999998" fill="var(--surface)" opacity=".9"/></g><ellipse cx="108.05" cy="183.3" rx="5.699999999999999" ry="3.42" fill="var(--pink-soft)"/><ellipse cx="147.95" cy="183.3" rx="5.699999999999999" ry="3.42" fill="var(--pink-soft)"/></g></svg></div>
+    <div className="cover-campi-wrap">
+      <svg aria-hidden="true" className="cover-campi" viewBox="0 0 120 136">
+        <g className="cover-flag">
+          <line x1="60" y1="22" x2="60" y2="10" stroke={ink} strokeWidth="5" strokeLinecap="round"/>
+          <circle cx="60" cy="9" r="6" fill="var(--coral)" stroke={ink} strokeWidth="4"/>
+        </g>
+        <rect x="12" y="44" width="12" height="20" rx="5" fill="var(--golden)" stroke={ink} strokeWidth="4"/>
+        <rect x="96" y="44" width="12" height="20" rx="5" fill="var(--golden)" stroke={ink} strokeWidth="4"/>
+        <rect x="20" y="22" width="80" height="64" rx="20" fill="var(--bolt-head)" stroke={ink} strokeWidth="5"/>
+        <rect x="31" y="33" width="58" height="42" rx="13" fill={ink}/>
+        <g className="cover-eyes">
+          <path d="M42 55 q6 -8 12 0" stroke="var(--bolt-eye)" strokeWidth="4.5" fill="none" strokeLinecap="round"/>
+          <path d="M66 55 q6 -8 12 0" stroke="var(--bolt-eye)" strokeWidth="4.5" fill="none" strokeLinecap="round"/>
+        </g>
+        <path d="M53 62 q7 6 14 0" stroke="var(--bolt-eye)" strokeWidth="4" fill="none" strokeLinecap="round"/>
+        <circle cx="39" cy="64" r="3.5" fill="#ff9a9a"/>
+        <circle cx="81" cy="64" r="3.5" fill="#ff9a9a"/>
+        <rect x="51" y="85" width="18" height="9" fill="var(--bolt-steel)" stroke={ink} strokeWidth="4"/>
+        <path d="M38 106 L19 119" stroke={ink} strokeWidth="5" strokeLinecap="round"/>
+        <path d="M82 106 L101 119" stroke={ink} strokeWidth="5" strokeLinecap="round"/>
+        <circle cx="15" cy="122" r="8" fill="var(--bolt-steel)" stroke={ink} strokeWidth="4"/>
+        <circle cx="105" cy="122" r="8" fill="var(--bolt-steel)" stroke={ink} strokeWidth="4"/>
+        <rect x="34" y="92" width="52" height="40" rx="13" fill="var(--sunny)" stroke={ink} strokeWidth="5"/>
+        <circle cx="60" cy="112" r="7" fill="var(--coral)" stroke={ink} strokeWidth="3.5"/>
+      </svg>
+    </div>
     <div className="cover-wordmark" aria-hidden="true">
       {Array.from("aiventura").map((letter, i) => <span key={i} className={`cover-letter cover-letter-${i} ${i < 2 ? "cover-letter-pink" : "cover-letter-blue"}`}>{letter}</span>)}
     </div>

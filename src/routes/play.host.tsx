@@ -48,7 +48,7 @@ function HostPage() {
 
   return (
     <StarPage seed={23} count={18}>
-      {hostKey ? <Host hostKey={hostKey} /> : <div className="p-10 text-center font-extrabold text-sky-text">Loading…</div>}
+      {hostKey ? <Host hostKey={hostKey} /> : <div className="p-10 text-center font-extrabold text-ink-muted">Loading…</div>}
     </StarPage>
   );
 }
@@ -60,7 +60,7 @@ function HostHeader({ stage }: { stage: Stage | null }) {
       <div className="mx-auto flex max-w-[1180px] flex-wrap items-center justify-between gap-4 px-6 py-3.5">
         <div className="flex flex-wrap items-center gap-[18px]">
           <Link to="/journey" aria-label="Back to the journey map"><Wordmark height={60} /></Link>
-          <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-pink-soft">Play in class · Draw our teacher</span>
+          <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-ink-muted">Play in class · Draw our teacher</span>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {stage && <StepPills steps={["Join", "Write", "Reveal"]} current={idx} label={`Stage ${idx + 1} of 3: ${["Join", "Write", "Reveal"][idx]}`} />}
@@ -132,7 +132,7 @@ function Host({ hostKey }: { hostKey: string }) {
       <HostHeader stage={stage} />
       <main className="relative mx-auto flex max-w-[1180px] flex-col gap-6 px-6 pb-[72px] pt-7">
         {error && <div role="alert" className="card-raised p-5 font-bold">{error}</div>}
-        {!room && !error && <div className="p-10 text-center font-extrabold text-sky-text">Opening your room…</div>}
+        {!room && !error && <div className="p-10 text-center font-extrabold text-ink-muted">Opening your room…</div>}
         {room && stage === "join" && <JoinStage room={room} teams={teams} players={players} onNext={() => updateRoom({ stage: "write" })} />}
         {room && stage === "write" && (
           <WriteStage
@@ -180,7 +180,7 @@ function JoinStage({ room, teams, players, onNext }: { room: Room; teams: Team[]
           Scan the code, or go to <strong className="text-navy">{joinUrl}</strong> and type the room code.
         </p>
         <div role="img" aria-label={`QR code to join room ${formatCode(room.code)}`} className="box-border h-[216px] w-[216px] rounded-[20px] border-[3px] border-navy p-3.5 [&_svg]:h-full [&_svg]:w-full" dangerouslySetInnerHTML={{ __html: qr }} />
-        <div className="rounded-[18px] bg-sun-tint px-[22px] py-3" style={{ boxShadow: "0 4px 0 var(--sun)" }}>
+        <div className="rounded-[18px] bg-sun-tint px-[22px] py-3" style={{ boxShadow: "4px 4px 0 var(--ink)" }}>
           <div className="text-[13px] font-black uppercase tracking-[.1em] text-ink-muted">Room code</div>
           <div className="font-display text-[52px] leading-[58px] tracking-[.08em]">{formatCode(room.code)}</div>
         </div>
@@ -215,7 +215,7 @@ function JoinStage({ room, teams, players, onNext }: { room: Room; teams: Team[]
               </div>
             );
           })}
-          <div className="tone-lilac flex flex-col gap-2 rounded-[18px] border-[3px] border-dashed border-lilac-edge bg-lilac-tint px-3.5 py-3" style={{ boxShadow: "0 4px 0 var(--lilac)" }}>
+          <div className="tone-lilac flex flex-col gap-2 rounded-[18px] border-[3px] border-dashed border-lilac-edge bg-lilac-tint px-3.5 py-3" style={{ boxShadow: "4px 4px 0 var(--ink)" }}>
             <div className="flex items-center justify-between gap-2">
               <span className="font-display text-[21px] leading-[26px]">{LIVE_TEAM.name}</span>
               <span className="rounded-full bg-surface px-2.5 py-0.5 text-sm font-extrabold">Live team</span>
@@ -275,7 +275,7 @@ function WriteStage({
             ))}
           </div>
         </section>
-        <section className="tone-sun flex min-w-0 flex-[2_1_340px] flex-col gap-3 rounded-3xl bg-sun-tint p-6" style={{ boxShadow: "0 6px 0 var(--sun-edge)" }}>
+        <section className="tone-sun flex min-w-0 flex-[2_1_340px] flex-col gap-3 rounded-3xl bg-sun-tint p-6" style={{ boxShadow: "6px 6px 0 var(--ink)" }}>
           <div className="flex items-center justify-between gap-2">
             <h2 className="kicker m-0">Our teacher today</h2>
             <button
@@ -311,7 +311,7 @@ function WriteStage({
         </section>
       </div>
 
-      <section className="tone-lilac flex flex-col gap-3 rounded-3xl border-[3px] border-dashed border-lilac-edge bg-surface px-[26px] py-[22px]" style={{ boxShadow: "0 6px 0 var(--lilac-edge)" }}>
+      <section className="tone-lilac flex flex-col gap-3 rounded-3xl border-[3px] border-dashed border-lilac-edge bg-surface px-[26px] py-[22px]" style={{ boxShadow: "6px 6px 0 var(--ink)" }}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="m-0 font-display text-[26px] leading-8">{LIVE_TEAM.name} · live team</h2>
           <span className={`rounded-full px-3.5 py-1.5 text-[15px] font-extrabold ${isSent ? "bg-blue-tint" : "bg-sun-tint"}`}>
@@ -411,8 +411,8 @@ function RevealStage({
     <>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="m-0 font-display text-[40px] leading-[46px] text-surface">Which drawing looks most like our teacher?</h1>
-          <p className="m-0 mt-1.5 text-lg font-bold leading-[25px] text-sky-text">Same mission, different prompts, very different pictures. Tap the heart to pick the class favourite.</p>
+          <h1 className="m-0 font-display text-[40px] leading-[46px] title-ground">Which drawing looks most like our teacher?</h1>
+          <p className="m-0 mt-1.5 text-lg font-bold leading-[25px] text-ink-muted">Same mission, different prompts, very different pictures. Tap the heart to pick the class favourite.</p>
         </div>
         <div className="flex items-center gap-2.5 rounded-full bg-sun-tint px-[18px] py-2.5 text-lg font-black"><StarIcon size={24} /> {stars} class stars</div>
       </div>
@@ -424,7 +424,7 @@ function RevealStage({
           const isFav = room.favourite_team_id === t.id;
           if ("empty" in c) {
             return (
-              <article key={t.id} className={`${tone} flex flex-col gap-3 rounded-[22px] border-[3px] border-dashed border-lilac-edge bg-surface p-[18px]`} style={{ boxShadow: "0 6px 0 var(--face)" }}>
+              <article key={t.id} className={`${tone} flex flex-col gap-3 rounded-[22px] border-[3px] border-dashed border-lilac-edge bg-surface p-[18px]`} style={{ boxShadow: "6px 6px 0 var(--ink)" }}>
                 <div className="flex items-center justify-between gap-2.5">
                   <span className="font-display text-[22px] leading-7">{t.name}</span>
                   <span className="rounded-full bg-lilac-tint px-3 py-1 text-sm font-extrabold">Live team</span>
@@ -453,7 +453,7 @@ function RevealStage({
             <article
               key={t.id}
               className={`${tone} flex flex-col gap-3 rounded-[22px] border-[3px] bg-surface p-[18px] ${c.isLive ? "border-dashed" : ""}`}
-              style={{ boxShadow: "0 6px 0 var(--face)", borderColor: isFav ? "var(--pink-edge)" : c.isLive ? "var(--lilac-edge)" : "var(--surface)" }}
+              style={{ boxShadow: "6px 6px 0 var(--ink)", borderColor: isFav ? "var(--pink-edge)" : c.isLive ? "var(--lilac-edge)" : "var(--surface)" }}
             >
               <div className="flex items-center justify-between gap-2.5">
                 <span className="font-display text-[22px] leading-7">{t.name}</span>
@@ -466,7 +466,7 @@ function RevealStage({
                     aria-pressed={isFav}
                     onClick={() => onFav(t.id)}
                     className="focus-ring flex h-12 w-12 items-center justify-center rounded-full border-0 transition-transform active:translate-y-[3px]"
-                    style={{ background: isFav ? "var(--pink-tint)" : "var(--surface-soft)", boxShadow: "0 3px 0 var(--pink-edge)" }}
+                    style={{ background: isFav ? "var(--pink-tint)" : "var(--surface-soft)", boxShadow: "3px 3px 0 var(--ink)" }}
                   >
                     <HeartIcon filled={isFav} />
                   </button>
@@ -516,7 +516,7 @@ function RevealStage({
           <p className="m-0 mt-1 font-display text-2xl leading-[31px]">Why do the drawings look so different? Which words made the biggest change?</p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button type="button" className="btn-chunky tone-white" style={{ boxShadow: "0 4px 0 var(--sun-edge)" }} onClick={onAgain}>Play again</button>
+          <button type="button" className="btn-chunky tone-white" style={{ boxShadow: "4px 4px 0 var(--ink)" }} onClick={onAgain}>Play again</button>
           <Link to="/journey" className="btn-chunky btn-night">Back to the map</Link>
         </div>
       </section>
