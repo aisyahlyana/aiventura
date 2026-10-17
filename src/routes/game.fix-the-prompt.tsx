@@ -109,15 +109,19 @@ function Lesson({ onDone }: { onDone: () => void }) {
         <div className="font-display text-[24px] leading-[30px] text-blue-deep">Here is the same prompt, with more parts added. Match each piece to its job!</div>
         <div className="flex flex-wrap gap-2.5">
           {PARTS.map((p) => {
-            const isSolved = solved.includes(p.id), cur = p.id === curId;
+            const isSolved = solved.includes(p.id), isSel = p.id === sel;
             return (
-              <div
+              <button
                 key={p.id}
-                className={`${p.tone} relative rounded-xl border-[3px] px-3 py-2 text-xl font-extrabold leading-7`}
+                type="button"
+                disabled={isSolved}
+                aria-pressed={isSel}
+                onClick={() => { setSel(isSel ? null : p.id); setWrong(null); setLastRight(null); }}
+                className={`${p.tone} relative rounded-xl border-[3px] px-3 py-2 text-xl font-extrabold leading-7 transition-transform active:translate-y-0.5`}
                 style={{
-                  background: isSolved ? "var(--tint)" : cur ? "var(--surface)" : "var(--soft-grey)",
-                  borderColor: isSolved ? "var(--face)" : cur ? "var(--navy)" : "var(--soft-grey)",
-                  borderStyle: cur ? "dashed" : "solid",
+                  background: isSolved ? "var(--tint)" : isSel ? "var(--surface)" : "var(--soft-grey)",
+                  borderColor: isSolved ? "var(--face)" : isSel ? "var(--navy)" : "var(--soft-grey)",
+                  borderStyle: isSel ? "dashed" : "solid",
                 }}
               >
                 {p.text}
@@ -126,7 +130,7 @@ function Lesson({ onDone }: { onDone: () => void }) {
                     {p.n}
                   </span>
                 )}
-              </div>
+              </button>
             );
           })}
         </div>
@@ -137,9 +141,9 @@ function Lesson({ onDone }: { onDone: () => void }) {
           <div
             role="status"
             aria-live="polite"
-            className={`flex flex-wrap items-center gap-3 rounded-2xl px-4 py-3.5 ${wrong ? "bg-pink-tint" : last ? "bg-blue-tint" : "bg-sun-tint"}`}
+            className={`flex flex-wrap items-center gap-3 rounded-2xl px-4 py-3.5 ${wrong && wrong !== "none" ? "bg-pink-tint" : last ? "bg-blue-tint" : "bg-sun-tint"}`}
           >
-            <div className="font-display text-[22px] leading-7">Which part is this?</div>
+            <div className="font-display text-[22px] leading-7">{selPart ? "What does this part do?" : "Choose a piece"}</div>
             <div className="flex-[1_1_260px] text-base font-bold leading-[23px]">{fbText}</div>
           </div>
           <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))" }}>
@@ -150,7 +154,8 @@ function Lesson({ onDone }: { onDone: () => void }) {
                 className={`${p.tone} focus-ring flex flex-col gap-1.5 rounded-[18px] border-[3px] px-4 py-3.5 text-left transition-transform active:translate-y-1`}
                 style={{ borderColor: wrong === p.id ? "var(--pink-edge)" : "var(--tint)", background: "var(--tint)", boxShadow: "0 5px 0 var(--face)" }}
                 onClick={() => {
-                  if (p.id === ASK_ORDER[qi]) { setQi(qi + 1); setWrong(null); setLastRight(p.id); }
+                  if (!sel) { setWrong("none"); setLastRight(null); return; }
+                  if (p.id === sel) { setSolved((s) => [...s, p.id]); setSel(null); setWrong(null); setLastRight(p.id); }
                   else { setWrong(p.id); setLastRight(null); }
                 }}
               >
