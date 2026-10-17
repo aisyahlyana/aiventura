@@ -29,7 +29,7 @@ export const keywordModerator: Moderator = (text) => {
   const personal = hits(low, PERSONAL);
   if (EMAIL_OR_NUMBER.test(low)) personal.push("a number or email");
   if (personal.length) {
-    const what = personal[0].replace(/\\d\+/g, "…").replace(/\\/g, "");
+    const what = personal[0]!.replace(/\\d\+/g, "…").replace(/\\/g, "");
     issues.push({ kind: "private", title: "Private info.", detail: `Take out names, ages, addresses and schools: “${what}”.` });
   }
   const real = REAL_NAME.exec(low);
