@@ -9,7 +9,7 @@ export const PHASES: Phase[] = [
     blurb: "A clear question gets a better answer. Learn the parts of a good prompt.",
     lessons: [
       { title: "Fix the prompt", desc: "Game: learn the four parts of a good prompt, then improve one about climate change.", time: "15 min", who: "Groups of 4", game: true },
-      { title: "Be specific", desc: "Turn vague questions into clear ones: who it is for, what you want, how, and how much.", time: "15 min", who: "Pairs" },
+      { title: "Say it clearly", desc: "Turn vague questions into clear ones: who it is for, what you want, how, and how much.", time: "15 min", who: "Pairs" },
       { title: "Pick the right style", desc: "Ask for steps, a list, a story or a table, then compare the answers.", time: "15 min", who: "Groups of 4" },
       { title: "Ask a follow-up", desc: "Not happy with the answer? Practise asking again in a better way.", time: "10 min", who: "Pairs" },
       { title: "Prompt master", desc: "Write a prompt for a class project that gets a useful answer first time. Finishes Phase 1.", time: "20 min", who: "Groups of 4", challenge: true },
