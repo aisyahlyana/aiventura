@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GameFixThePromptRouteImport } from './routes/game.fix-the-prompt'
+import { Route as PlayJoinRouteImport } from './routes/play.join'
 import { Route as PrintFixThePromptRouteImport } from './routes/print.fix-the-prompt'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const GameFixThePromptRoute = GameFixThePromptRouteImport.update({
   path: '/game/fix-the-prompt',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlayJoinRoute = PlayJoinRouteImport.update({
+  id: '/play/join',
+  path: '/play/join',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrintFixThePromptRoute = PrintFixThePromptRouteImport.update({
   id: '/print/fix-the-prompt',
   path: '/print/fix-the-prompt',
@@ -32,30 +38,40 @@ const PrintFixThePromptRoute = PrintFixThePromptRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/game/fix-the-prompt': typeof GameFixThePromptRoute
+  '/play/join': typeof PlayJoinRoute
   '/print/fix-the-prompt': typeof PrintFixThePromptRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/game/fix-the-prompt': typeof GameFixThePromptRoute
+  '/play/join': typeof PlayJoinRoute
   '/print/fix-the-prompt': typeof PrintFixThePromptRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/game/fix-the-prompt': typeof GameFixThePromptRoute
+  '/play/join': typeof PlayJoinRoute
   '/print/fix-the-prompt': typeof PrintFixThePromptRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/game/fix-the-prompt' | '/print/fix-the-prompt'
+  fullPaths:
+    '/' | '/game/fix-the-prompt' | '/play/join' | '/print/fix-the-prompt'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/game/fix-the-prompt' | '/print/fix-the-prompt'
-  id: '__root__' | '/' | '/game/fix-the-prompt' | '/print/fix-the-prompt'
+  to: '/' | '/game/fix-the-prompt' | '/play/join' | '/print/fix-the-prompt'
+  id:
+    | '__root__'
+    | '/'
+    | '/game/fix-the-prompt'
+    | '/play/join'
+    | '/print/fix-the-prompt'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GameFixThePromptRoute: typeof GameFixThePromptRoute
+  PlayJoinRoute: typeof PlayJoinRoute
   PrintFixThePromptRoute: typeof PrintFixThePromptRoute
 }
 
@@ -75,6 +91,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GameFixThePromptRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/play/join': {
+      id: '/play/join'
+      path: '/play/join'
+      fullPath: '/play/join'
+      preLoaderRoute: typeof PlayJoinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/print/fix-the-prompt': {
       id: '/print/fix-the-prompt'
       path: '/print/fix-the-prompt'
@@ -88,6 +111,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GameFixThePromptRoute: GameFixThePromptRoute,
+  PlayJoinRoute: PlayJoinRoute,
   PrintFixThePromptRoute: PrintFixThePromptRoute,
 }
 export const routeTree = rootRouteImport
