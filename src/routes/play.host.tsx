@@ -1,16 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
-import type { Session } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { hostGetState, hostOpenRoom, hostSendLive, hostUpdateRoom } from "@/lib/play.functions";
 import { StarPage, StepPills, Wordmark } from "@/components/brand/Brand";
 import { CheckIcon, HeartIcon, LockIcon, ShieldIcon, StarIcon } from "@/components/brand/Icons";
-import { HostAuth } from "@/components/play/HostAuth";
 import { PartChips, SafetyPanel } from "@/components/play/PromptChecks";
 import { TeacherDrawing } from "@/components/play/TeacherDrawing";
 import { buildDrawing, clueFound } from "@/lib/drawing";
 import { highlightParts } from "@/lib/highlight";
-import { DEFAULT_CLUES, DEMO_TEAMS, LIVE_TEAM, STUDENT_TEAMS, formatCode, type DemoTeam } from "@/lib/play";
+import { DEMO_TEAMS, LIVE_TEAM, formatCode, type DemoTeam } from "@/lib/play";
 import { DRAW_PARTS, checkPrompt, detectParts, type DrawPartId } from "@/lib/safety";
 
 export const Route = createFileRoute("/play/host")({
@@ -36,33 +35,24 @@ type Prompt = { id: string; team_id: string; text: string };
 const TONE: Record<string, string> = { pink: "tone-pink", blue: "tone-blue", sun: "tone-sun", lilac: "tone-lilac" };
 const PART_TONE = Object.fromEntries(DRAW_PARTS.map((p) => [p.id, p.tone])) as Record<DrawPartId, string>;
 
+const HOST_KEY = "aiventura-host-key";
+
 function HostPage() {
-  const [session, setSession] = useState<Session | null | undefined>(undefined);
+  const [hostKey, setHostKey] = useState<string | null>(null);
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data } = supabase.auth.onAuthStateChange((event, s) => {
-      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "INITIAL_SESSION") setSession(s);
-    });
-    return () => data.subscription.unsubscribe();
+    let k = window.localStorage.getItem(HOST_KEY);
+    if (!k) { k = crypto.randomUUID(); window.localStorage.setItem(HOST_KEY, k); }
+    setHostKey(k);
   }, []);
 
   return (
     <StarPage seed={23} count={18}>
-      {session === undefined ? (
-        <div className="p-10 text-center font-extrabold text-sky-text">Loading…</div>
-      ) : session ? (
-        <Host userId={session.user.id} />
-      ) : (
-        <>
-          <HostHeader stage={null} />
-          <main className="relative px-6 py-10"><HostAuth /></main>
-        </>
-      )}
+      {hostKey ? <Host hostKey={hostKey} /> : <div className="p-10 text-center font-extrabold text-sky-text">Loading…</div>}
     </StarPage>
   );
 }
 
-function HostHeader({ stage, onSignOut }: { stage: Stage | null; onSignOut?: () => void }) {
+function HostHeader({ stage }: { stage: Stage | null }) {
   const idx = stage === "join" ? 0 : stage === "write" ? 1 : 2;
   return (
     <header className="relative border-b-2 border-white/15">
@@ -73,104 +63,71 @@ function HostHeader({ stage, onSignOut }: { stage: Stage | null; onSignOut?: () 
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {stage && <StepPills steps={["Join", "Write", "Reveal"]} current={idx} label={`Stage ${idx + 1} of 3: ${["Join", "Write", "Reveal"][idx]}`} />}
-          {onSignOut && <button type="button" className="btn-ghost !py-1.5" onClick={onSignOut}>Sign out</button>}
         </div>
       </div>
     </header>
   );
 }
 
-function randomCode() {
-  return String(Math.floor(100000 + Math.random() * 900000));
-}
-
-async function createRoom(userId: string): Promise<Room> {
-  for (let i = 0; i < 5; i++) {
-    const { data, error } = await supabase
-      .from("rooms")
-      .insert({ code: randomCode(), teacher_id: userId, stage: "join", clues: DEFAULT_CLUES })
-      .select("id, code, stage, clues, favourite_team_id")
-      .single();
-    if (data) {
-      const teams = [...STUDENT_TEAMS, LIVE_TEAM].map((t, sort) => ({ room_id: data.id, name: t.name, color: t.color, sort }));
-      await supabase.from("teams").insert(teams);
-      return { ...data, clues: data.clues as string[] };
-    }
-    if (error && error.code !== "23505") throw error;
-  }
-  throw new Error("Could not create a room");
-}
-
-function Host({ userId }: { userId: string }) {
+function Host({ hostKey }: { hostKey: string }) {
+  const [roomId, setRoomId] = useState<string | null>(null);
   const [room, setRoom] = useState<Room | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [prompts, setPrompts] = useState<Prompt[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const openFn = useServerFn(hostOpenRoom);
+  const stateFn = useServerFn(hostGetState);
+  const updateFn = useServerFn(hostUpdateRoom);
+  const liveFn = useServerFn(hostSendLive);
 
   const openRoom = useCallback(async (fresh: boolean) => {
     setError(null);
     try {
-      let r: Room | null = null;
-      if (!fresh) {
-        const since = new Date(Date.now() - 12 * 3600 * 1000).toISOString();
-        const { data } = await supabase
-          .from("rooms")
-          .select("id, code, stage, clues, favourite_team_id")
-          .gte("created_at", since)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
-        if (data) r = { ...data, clues: data.clues as string[] };
-      }
-      if (!r) r = await createRoom(userId);
-      setRoom(r);
+      const r = await openFn({ data: { hostKey, fresh } });
+      setRoomId(r.roomId);
     } catch {
       setError("We couldn't open a room. Please refresh and try again.");
     }
-  }, [userId]);
+  }, [hostKey, openFn]);
 
   useEffect(() => { openRoom(false); }, [openRoom]);
 
-  const roomId = room?.id;
   const loadLists = useCallback(async () => {
     if (!roomId) return;
-    const [t, p, pr] = await Promise.all([
-      supabase.from("teams").select("id, name, color, sort").eq("room_id", roomId).order("sort"),
-      supabase.from("players").select("id, team_id, nickname").eq("room_id", roomId).order("created_at"),
-      supabase.from("prompts").select("id, team_id, text").eq("room_id", roomId),
-    ]);
-    setTeams(t.data ?? []);
-    setPlayers(p.data ?? []);
-    setPrompts(pr.data ?? []);
-  }, [roomId]);
+    try {
+      const s = await stateFn({ data: { roomId, hostKey } });
+      setRoom((cur) => (cur && cur.id === s.room.id ? { ...s.room, stage: cur.stage, clues: cur.clues, favourite_team_id: cur.favourite_team_id } : s.room));
+      setTeams(s.teams); setPlayers(s.players); setPrompts(s.prompts);
+    } catch { /* keep last state */ }
+  }, [roomId, hostKey, stateFn]);
 
+  // Students' phones send prompts to the server; the big screen checks every 2 seconds.
   useEffect(() => {
     if (!roomId) return;
     loadLists();
-    const channel = supabase
-      .channel(`room-${roomId}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "players", filter: `room_id=eq.${roomId}` }, () => loadLists())
-      .on("postgres_changes", { event: "*", schema: "public", table: "prompts", filter: `room_id=eq.${roomId}` }, () => loadLists())
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    const t = window.setInterval(loadLists, 2000);
+    return () => window.clearInterval(t);
   }, [roomId, loadLists]);
 
   async function updateRoom(patch: Partial<Pick<Room, "stage" | "clues" | "favourite_team_id">>) {
     if (!room) return;
     setRoom({ ...room, ...patch });
-    await supabase.from("rooms").update(patch).eq("id", room.id);
+    await updateFn({ data: { roomId: room.id, hostKey, ...patch } });
   }
 
-  async function signOut() {
-    await supabase.auth.signOut();
+  async function sendLive(text: string) {
+    if (!room) return false;
+    const r = await liveFn({ data: { roomId: room.id, hostKey, text } });
+    await loadLists();
+    return r.ok;
   }
 
   const stage = (room?.stage ?? "join") as Stage;
 
   return (
     <>
-      <HostHeader stage={stage} onSignOut={signOut} />
+      <HostHeader stage={stage} />
       <main className="relative mx-auto flex max-w-[1180px] flex-col gap-6 px-6 pb-[72px] pt-7">
         {error && <div role="alert" className="card-raised p-5 font-bold">{error}</div>}
         {!room && !error && <div className="p-10 text-center font-extrabold text-sky-text">Opening your room…</div>}
@@ -182,7 +139,7 @@ function Host({ userId }: { userId: string }) {
             players={players}
             prompts={prompts}
             onClues={(clues) => updateRoom({ clues })}
-            onSent={loadLists}
+            onSendLive={sendLive}
             onNext={() => updateRoom({ stage: "reveal" })}
           />
         )}
@@ -193,7 +150,7 @@ function Host({ userId }: { userId: string }) {
             prompts={prompts}
             onFav={(id) => updateRoom({ favourite_team_id: room.favourite_team_id === id ? null : id })}
             onBack={() => updateRoom({ stage: "write" })}
-            onAgain={() => { setRoom(null); setTeams([]); setPlayers([]); setPrompts([]); openRoom(true); }}
+            onAgain={() => { setRoom(null); setRoomId(null); setTeams([]); setPlayers([]); setPrompts([]); openRoom(true); }}
           />
         )}
       </main>
@@ -275,10 +232,10 @@ function JoinStage({ room, teams, players, onNext }: { room: Room; teams: Team[]
 /* ---------------- Stage 2: Write ---------------- */
 
 function WriteStage({
-  room, teams, players, prompts, onClues, onSent, onNext,
+  room, teams, players, prompts, onClues, onSendLive, onNext,
 }: {
   room: Room; teams: Team[]; players: Player[]; prompts: Prompt[];
-  onClues: (c: string[]) => void; onSent: () => void; onNext: () => void;
+  onClues: (c: string[]) => void; onSendLive: (text: string) => Promise<boolean>; onNext: () => void;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(room.clues);
@@ -292,10 +249,9 @@ function WriteStage({
   async function sendLive() {
     if (!live || !safety.canSend) return;
     const text = liveText.trim();
-    await supabase.from("prompts").upsert({ room_id: room.id, team_id: live.id, text, created_at: new Date().toISOString() }, { onConflict: "team_id" });
+    if (!(await onSendLive(text))) return;
     setLiveText(text);
     setSentText(text);
-    onSent();
   }
 
   return (
