@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>aiventura Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Fredoka:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* Critical loader styles, inline so the first paint is already the loader (no flash of unstyled page) */
+  html,body{margin:0;background:#D6ECFF}
+  #app{visibility:hidden}
+  body.ready #app{visibility:visible}
+  #loader{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:24px;
+    background:#D6ECFF radial-gradient(#B3D9FB 2px,transparent 2.5px) 0 0/26px 26px;transition:opacity .35s ease}
+  body.ready #loader{opacity:0;pointer-events:none}
+  .ld-card{width:min(420px,100%);background:#fff;border:4px solid #1F2340;border-radius:28px;box-shadow:7px 7px 0 #1F2340;
+    padding:24px 26px;display:flex;flex-direction:column;align-items:center;gap:14px;font:600 15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;color:#1F2340}
+  .ld-card img{width:84px;height:auto}
+  .ld-track{width:100%;height:22px;background:#EAF5FF;border:3px solid #1F2340;border-radius:999px;overflow:hidden}
+  .ld-fill{display:block;height:100%;width:0;background:#FFC83D;border-right:3px solid #1F2340;transition:width .3s ease}
+  .ld-row{width:100%;display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
+  .ld-list{list-style:none;margin:0;padding:0;width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .ld-list li{display:flex;align-items:center;gap:6px;color:#4D5370;font-size:13px}
+  .ld-list li::before{content:"";width:12px;height:12px;border-radius:50%;border:2px solid #1F2340;background:#fff;flex:none}
+  .ld-list li.done{color:#1F2340}
+  .ld-list li.done::before{background:#20A95A}
+  @media (prefers-reduced-motion:reduce){#loader,.ld-fill{transition:none}}
+</style>
+</head>
+<body>
+
+<div id="loader" role="status" aria-live="polite">
+  <div class="ld-card">
+    <img src="assets/bolt-mark.svg" alt="" width="84" height="95">
+    <div class="ld-row"><span>Getting Bolt ready…</span><span id="ldPct">0%</span></div>
+    <div class="ld-track" aria-hidden="true"><span class="ld-fill" id="ldFill"></span></div>
+    <ul class="ld-list" id="ldList"></ul>
+  </div>
+</div>
+
+<div id="app" class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="lockup">
+        <img src="assets/bolt-mark.svg" alt="" width="52" height="59">
+        <h1 class="wordmark"><span class="ai">ai</span><span class="ventura">ventura</span></h1>
+      </div>
+      <p>Clickable prototype. Click through the big screen, and type your own answer on the phone.</p>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Classroom mode">
+        <button id="modeDevices" aria-pressed="true">With devices</button>
+        <button id="modePaper" aria-pressed="false">Paper only</button>
+      </div>
+      <button class="ghost" id="restart">Restart</button>
+    </div>
+  </header>
+
+  <nav class="steps" id="steps" aria-label="Lesson steps"></nav>
+
+  <main class="stage">
+    <section>
+      <div class="label">Classroom screen (projected by the teacher)</div>
+      <div class="projector"><div class="screen" id="screen"></div></div>
+    </section>
+    <aside>
+      <div class="label" id="sideLabel">Student phone</div>
+      <div id="side"></div>
+    </aside>
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
