@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GameFixThePromptRouteImport } from './routes/game.fix-the-prompt'
+import { Route as GameSayItClearlyRouteImport } from './routes/game.say-it-clearly'
 import { Route as PlayHostRouteImport } from './routes/play.host'
 import { Route as PlayJoinRouteImport } from './routes/play.join'
 import { Route as PrintFixThePromptRouteImport } from './routes/print.fix-the-prompt'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const GameFixThePromptRoute = GameFixThePromptRouteImport.update({
   id: '/game/fix-the-prompt',
   path: '/game/fix-the-prompt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GameSayItClearlyRoute = GameSayItClearlyRouteImport.update({
+  id: '/game/say-it-clearly',
+  path: '/game/say-it-clearly',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlayHostRoute = PlayHostRouteImport.update({
@@ -44,6 +50,7 @@ const PrintFixThePromptRoute = PrintFixThePromptRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/game/fix-the-prompt': typeof GameFixThePromptRoute
+  '/game/say-it-clearly': typeof GameSayItClearlyRoute
   '/play/host': typeof PlayHostRoute
   '/play/join': typeof PlayJoinRoute
   '/print/fix-the-prompt': typeof PrintFixThePromptRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/game/fix-the-prompt': typeof GameFixThePromptRoute
+  '/game/say-it-clearly': typeof GameSayItClearlyRoute
   '/play/host': typeof PlayHostRoute
   '/play/join': typeof PlayJoinRoute
   '/print/fix-the-prompt': typeof PrintFixThePromptRoute
@@ -59,6 +67,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/game/fix-the-prompt': typeof GameFixThePromptRoute
+  '/game/say-it-clearly': typeof GameSayItClearlyRoute
   '/play/host': typeof PlayHostRoute
   '/play/join': typeof PlayJoinRoute
   '/print/fix-the-prompt': typeof PrintFixThePromptRoute
@@ -68,6 +77,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/game/fix-the-prompt'
+    | '/game/say-it-clearly'
     | '/play/host'
     | '/play/join'
     | '/print/fix-the-prompt'
@@ -75,6 +85,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/game/fix-the-prompt'
+    | '/game/say-it-clearly'
     | '/play/host'
     | '/play/join'
     | '/print/fix-the-prompt'
@@ -82,6 +93,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/game/fix-the-prompt'
+    | '/game/say-it-clearly'
     | '/play/host'
     | '/play/join'
     | '/print/fix-the-prompt'
@@ -90,6 +102,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GameFixThePromptRoute: typeof GameFixThePromptRoute
+  GameSayItClearlyRoute: typeof GameSayItClearlyRoute
   PlayHostRoute: typeof PlayHostRoute
   PlayJoinRoute: typeof PlayJoinRoute
   PrintFixThePromptRoute: typeof PrintFixThePromptRoute
@@ -109,6 +122,13 @@ declare module '@tanstack/react-router' {
       path: '/game/fix-the-prompt'
       fullPath: '/game/fix-the-prompt'
       preLoaderRoute: typeof GameFixThePromptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/game/say-it-clearly': {
+      id: '/game/say-it-clearly'
+      path: '/game/say-it-clearly'
+      fullPath: '/game/say-it-clearly'
+      preLoaderRoute: typeof GameSayItClearlyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/play/host': {
@@ -138,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GameFixThePromptRoute: GameFixThePromptRoute,
+  GameSayItClearlyRoute: GameSayItClearlyRoute,
   PlayHostRoute: PlayHostRoute,
   PlayJoinRoute: PlayJoinRoute,
   PrintFixThePromptRoute: PrintFixThePromptRoute,

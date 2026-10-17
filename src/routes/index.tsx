@@ -108,7 +108,7 @@ function JourneyMap() {
                     <h3 className="m-0 font-display text-[23px] leading-7">{l.title}</h3>
                     <p className="m-0 text-base font-semibold leading-[23px]">{l.desc}</p>
                     {l.game && !locked && (
-                      <Link to="/game/fix-the-prompt" className="btn-chunky tone-sun mt-2">
+                      <Link to={l.game} className="btn-chunky tone-sun mt-2">
                         <PlayIcon /> Play the game
                       </Link>
                     )}
@@ -117,7 +117,7 @@ function JourneyMap() {
                         type="button"
                         className="btn-chunky mt-2"
                         onClick={() => {
-                          if (l.game) navigate({ to: "/game/fix-the-prompt" });
+                          if (l.game) navigate({ to: l.game });
                           else { setProgress(gi + 1); setOpen(null); }
                         }}
                       >
@@ -128,7 +128,7 @@ function JourneyMap() {
                       <button
                         type="button"
                         className="btn-ghost mt-2 py-3 text-lg"
-                        onClick={() => (l.game ? navigate({ to: "/game/fix-the-prompt" }) : setOpen(null))}
+                        onClick={() => (l.game ? navigate({ to: l.game }) : setOpen(null))}
                       >
                         Practise again
                       </button>

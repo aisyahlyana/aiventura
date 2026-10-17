@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "@tanstack/react-router";
 
-const BACKABLE = ["/game/fix-the-prompt", "/print/fix-the-prompt", "/play/host", "/play/join"] as const;
+const BACKABLE = ["/game/fix-the-prompt", "/game/say-it-clearly", "/print/fix-the-prompt", "/play/host", "/play/join"] as const;
 export type BackableRoute = (typeof BACKABLE)[number];
 
 let cameFrom: BackableRoute | null = null;
