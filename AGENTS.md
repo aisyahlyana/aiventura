@@ -16,3 +16,7 @@
 - The journey map's back control always returns to the cover at `/`. The cover's back control appears only with a previous page in the same session (`src/lib/back.ts`); never render a back control that has nowhere to go.
 - Welcome animation styles are scoped to the cover and enabled only in the no-preference motion media query, so reduced-motion visitors see the final state immediately.
 - The animated cover mascot preserves the supplied brand SVG paths inline, allowing independent flag and eye motion without changing the source artwork.
+
+## Bolt AI connection
+
+- Keep Bolt credentials and gateway calls inside its server function, with request identification and redacted failure diagnostics; this keeps secrets private and makes practice fallbacks traceable.
