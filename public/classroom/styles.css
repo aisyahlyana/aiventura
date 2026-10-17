@@ -248,7 +248,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   color:var(--coral);-webkit-text-stroke:8px var(--ink);paint-order:stroke fill;text-shadow:0 5px 0 var(--ink);vertical-align:-.12em;margin-right:6px}
 
 /* Paper worksheet: mirrors the "Print for class" A4 pack */
-.worksheet.a4ws{transform:none;border-radius:6px;width:300px;aspect-ratio:210/297;padding:16px 14px;gap:8px;font-size:11px;overflow:hidden}
+.worksheet.a4ws{transform:none;border-radius:6px;width:300px;min-height:424px;padding:16px 14px;gap:8px;font-size:11px;overflow:hidden}
 .a4ws .ws-top{display:flex;justify-content:space-between;align-items:flex-end;gap:6px}
 .a4ws .ws-mark{font-family:var(--display);font-size:20px;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill}
 .a4ws .ws-mark .ai{color:var(--coral)} .a4ws .ws-mark .ventura{color:var(--golden)}

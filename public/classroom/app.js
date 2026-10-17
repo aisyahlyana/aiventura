@@ -443,7 +443,7 @@ function renderSide(){
       <div class="ws-top"><span class="ws-mark"><span class="ai">ai</span><span class="ventura">ventura</span></span><span class="ws-team">Team name: <i></i></span></div>
       <div class="ws-head"><img src="assets/bolt-mark.svg" alt=""><div><h3>Prompt it clearly</h3><p>Use only your team name. Never write real names on this sheet!</p></div></div>
       <section class="ws-box"><h4>Task 1 · Read Bolt's message</h4><div class="msg bot">Give me instructions to make a peanut butter and jelly sandwich. I will do exactly what you write!</div></section>
-      <section class="ws-box"><h4>Task 2 · Write your steps</h4><div class="lines">${'<span></span>'.repeat(6)}</div></section>
+      <section class="ws-box"><h4>Task 2 · Write your steps</h4><div class="lines">${'<span></span>'.repeat(4)}</div></section>
       <section class="ws-check"><h4>Team check</h4><div><i></i>Every step says exactly what to do</div><div><i></i>Nothing is missing</div><div><i></i>Nothing private or unkind</div></section>
       <div class="ws-foot">aiventura · Module 1 · Prompt it clearly · look at the big screen when done</div>
     </div>`;
