@@ -2,8 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { Campi, StarPage, Wordmark } from "@/components/brand/Brand";
+import { BackLink, BackScreen } from "@/components/brand/BackButton";
 import { PartChips, SafetyPanel } from "@/components/play/PromptChecks";
-import { joinRoom, joinTeam, submitPrompt } from "@/lib/play.functions";
+import { joinRoom, joinTeam, movePlayer, submitPrompt } from "@/lib/play.functions";
 import { NICKNAMES, formatCode, normaliseCode } from "@/lib/play";
 import { MAX_PROMPT_LENGTH, checkPrompt } from "@/lib/safety";
 
@@ -39,6 +40,7 @@ function Join() {
   const [busy, setBusy] = useState(false);
   const joinRoomFn = useServerFn(joinRoom);
   const joinTeamFn = useServerFn(joinTeam);
+  const moveFn = useServerFn(movePlayer);
   const submitFn = useServerFn(submitPrompt);
 
   useEffect(() => setNick(Math.floor(Math.random() * NICKNAMES.length)), []);
@@ -61,11 +63,25 @@ function Join() {
     if (!room || !team) return;
     setBusy(true); setError(null);
     try {
-      const r = await joinTeamFn({ data: { roomId: room.id, teamId: team.id, nickname: NICKNAMES[nick % NICKNAMES.length]! } });
-      if (!r.ok) setError(r.error);
-      else { setPlayerId(r.playerId); setStage("write"); }
+      if (playerId) {
+        const m = await moveFn({ data: { playerId, teamId: team.id } });
+        if (!m.ok) setError(m.error);
+        else setStage("write");
+      } else {
+        const r = await joinTeamFn({ data: { roomId: room.id, teamId: team.id, nickname: NICKNAMES[nick % NICKNAMES.length]! } });
+        if (!r.ok) setError(r.error);
+        else { setPlayerId(r.playerId); setStage("write"); }
+      }
     } catch { setError("Couldn't connect. Try again."); }
     setBusy(false);
+  }
+
+  /** Back one step, or to the journey map when the code screen is showing. */
+  function goBack() {
+    setError(null);
+    if (stage === "team") { setStage("join"); setRoom(null); setTeams([]); setTeam(null); }
+    else if (stage === "write") setStage("team");
+    else if (stage === "sent") setStage("write");
   }
   async function send() {
     if (!playerId || !safety.canSend) return;
@@ -81,11 +97,16 @@ function Join() {
   return (
     <StarPage seed={5} count={12}>
       <div className="relative mx-auto flex min-h-screen max-w-[440px] flex-col">
-        <header className="flex items-center justify-between px-5 pb-2 pt-[18px]">
+        <header className="flex items-center justify-between gap-3 px-5 pb-2 pt-[18px]">
           <Wordmark height={40} />
-          <span className="text-[13px] font-extrabold uppercase tracking-[.08em] text-pink-soft">
-            {room ? `Room ${formatCode(room.code)}` : "Play in class"}
-          </span>
+          <div className="flex items-center gap-2.5">
+            {room && (
+              <span className="text-[13px] font-extrabold uppercase tracking-[.08em] text-pink-soft">
+                Room {formatCode(room.code)}
+              </span>
+            )}
+            {stage === "join" ? <BackLink to="/" label="Back" /> : <BackScreen onClick={goBack} label="Back" />}
+          </div>
         </header>
         <main className="flex flex-1 flex-col gap-3 px-[18px] pb-5 pt-2">
           {error && <div role="alert" className="rounded-2xl bg-pink-tint px-4 py-3 text-[15px] font-bold">{error}</div>}

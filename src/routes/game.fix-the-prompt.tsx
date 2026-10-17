@@ -1,7 +1,10 @@
+// ============= Full file contents =============
+
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Campi, StarPage, StepPills } from "@/components/brand/Brand";
-import { BackIcon, CheckIcon, CrossIcon, GripIcon, LockIcon, PlayIcon, PlusIcon, PrintIcon, StarIcon, WrenchIcon } from "@/components/brand/Icons";
+import { BackLink, BackScreen } from "@/components/brand/BackButton";
+import { CheckIcon, CrossIcon, GripIcon, LockIcon, PlayIcon, PlusIcon, PrintIcon, StarIcon, WrenchIcon } from "@/components/brand/Icons";
 import { PARTS, PIECES, SCORE_NOTES, START_PROMPT, scorePrompt, type PartId } from "@/lib/fixPrompt";
 import { completeStep } from "@/lib/journey";
 
@@ -19,26 +22,36 @@ export const Route = createFileRoute("/game/fix-the-prompt")({
   component: FixThePrompt,
 });
 
+type Screen = "intro" | "match" | "practise" | "feedback";
+
 function FixThePrompt() {
-  const [learned, setLearned] = useState(false);
-  const [checked, setChecked] = useState(false);
-  const step = !learned ? 0 : checked ? 2 : 1;
+  const [screen, setScreen] = useState<Screen>("intro");
+  const [solved, setSolved] = useState<PartId[]>([]);
+  const [safe, setSafe] = useState<"add" | "skip" | null>(null);
+  const [picked, setPicked] = useState<string[]>([]);
+  const checked = screen === "feedback";
+  const step = screen === "intro" || screen === "match" ? 0 : screen === "practise" ? 1 : 2;
 
   useEffect(() => {
     if (checked) completeStep(0);
   }, [checked]);
 
+  /** One step back through the game's own screens. */
+  const back = () => {
+    if (screen === "match") setScreen("intro");
+    else if (screen === "practise") setScreen("match");
+    else if (screen === "feedback") setScreen("practise");
+  };
+
   return (
     <StarPage seed={11} count={18}>
       <header className="relative border-b-2 border-white/15">
         <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-4 px-6 py-4">
-          <Link to="/" className="btn-chunky tone-white !px-4 !py-2.5 !text-[15px]" style={{ boxShadow: "0 4px 0 var(--night-edge)" }}>
-            <BackIcon /> Journey map
-          </Link>
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-pink-soft">Phase 1 · Game 1</span>
             <StepPills steps={["Lesson", "Practise", "Feedback"]} current={step} label={`Step ${step + 1} of 3: ${["Lesson", "Practise", "Feedback"][step]}`} />
           </div>
+          {screen === "intro" ? <BackLink to="/" label="Journey map" /> : <BackScreen onClick={back} label="Back" />}
         </div>
       </header>
 
@@ -53,20 +66,55 @@ function FixThePrompt() {
           </div>
         </div>
 
-        {!learned && <Lesson onDone={() => setLearned(true)} />}
-        {learned && <Practise checked={checked} onCheck={() => setChecked(true)} onRetry={() => setChecked(false)} />}
+        {screen === "intro" && <LessonIntro onFix={() => setScreen("match")} />}
+        {screen === "match" && (
+          <LessonMatch
+            solved={solved}
+            onSolve={(id) => setSolved((s) => [...s, id])}
+            safe={safe}
+            onSafe={setSafe}
+            onDone={() => setScreen("practise")}
+          />
+        )}
+        {(screen === "practise" || screen === "feedback") && (
+          <Practise
+            checked={checked}
+            picked={picked}
+            onPick={(id) => setPicked((p) => (p.includes(id) ? p : [...p, id]))}
+            onRemove={(id) => setPicked((p) => p.filter((x) => x !== id))}
+            onCheck={() => setScreen("feedback")}
+            onRetry={() => { setPicked([]); setScreen("practise"); }}
+          />
+        )}
       </main>
     </StarPage>
   );
 }
 
-function Lesson({ onDone }: { onDone: () => void }) {
-  const [intro, setIntro] = useState(true);
+function LessonIntro({ onFix }: { onFix: () => void }) {
+  return (
+    <section className="card-raised flex flex-col items-center gap-5 p-8 text-center">
+      <Campi width={110} />
+      <span className="font-display text-[22px] leading-[28px] text-ink-muted">Here is a short prompt:</span>
+      <span className="font-display text-[40px] leading-[48px]">“Tell me about volcanoes.”</span>
+      <p className="m-0 max-w-[520px] text-[19px] font-bold leading-[27px] text-ink-muted">It's too short — the AI has to guess what you really want, so the answer may not help you.</p>
+      <button type="button" className="btn-chunky tone-pink min-w-[240px] !px-8 !py-4 !text-2xl" onClick={onFix}>
+        Let's fix it!
+      </button>
+    </section>
+  );
+}
+
+function LessonMatch({ solved, onSolve, safe, onSafe, onDone }: {
+  solved: PartId[];
+  onSolve: (id: PartId) => void;
+  safe: "add" | "skip" | null;
+  onSafe: (v: "add" | "skip") => void;
+  onDone: () => void;
+}) {
   const [sel, setSel] = useState<PartId | null>(null);
-  const [solved, setSolved] = useState<PartId[]>([]);
   const [wrong, setWrong] = useState<string | null>(null);
   const [lastRight, setLastRight] = useState<string | null>(null);
-  const [safe, setSafe] = useState<"add" | "skip" | null>(null);
   const quizDone = solved.length >= PARTS.length;
   const earned = solved.length + (safe === "skip" ? 1 : 0);
   const last = PARTS.find((p) => p.id === lastRight);
@@ -78,20 +126,6 @@ function Lesson({ onDone }: { onDone: () => void }) {
       : last
         ? `Yes! “${last.text}” is part ${last.n}: ${last.name} Now tap another piece.`
         : null;
-
-  if (intro) {
-    return (
-      <section className="card-raised flex flex-col items-center gap-5 p-8 text-center">
-        <Campi width={110} />
-        <span className="font-display text-[22px] leading-[28px] text-ink-muted">Here is a short prompt:</span>
-        <span className="font-display text-[40px] leading-[48px]">“Tell me about volcanoes.”</span>
-        <p className="m-0 max-w-[520px] text-[19px] font-bold leading-[27px] text-ink-muted">It's too short — the AI has to guess what you really want, so the answer may not help you.</p>
-        <button type="button" className="btn-chunky tone-pink min-w-[240px] !px-8 !py-4 !text-2xl" onClick={() => setIntro(false)}>
-          Let's fix it!
-        </button>
-      </section>
-    );
-  }
 
   return (
     <section className="card-raised flex flex-col gap-5 p-6">
@@ -155,7 +189,7 @@ function Lesson({ onDone }: { onDone: () => void }) {
                 style={{ borderColor: wrong === p.id ? "var(--pink-edge)" : "var(--tint)", background: "var(--tint)", boxShadow: "0 5px 0 var(--face)" }}
                 onClick={() => {
                   if (!sel) { setWrong("none"); setLastRight(null); return; }
-                  if (p.id === sel) { setSolved((s) => [...s, p.id]); setSel(null); setWrong(null); setLastRight(p.id); }
+                  if (p.id === sel) { onSolve(p.id); setSel(null); setWrong(null); setLastRight(p.id); }
                   else { setWrong(p.id); setLastRight(null); }
                 }}
               >
@@ -182,8 +216,8 @@ function Lesson({ onDone }: { onDone: () => void }) {
           <div className="rounded-xl bg-surface px-3.5 py-3 text-[19px] font-extrabold leading-[26px]">“My name is Leo and I go to Sunny Hill School.”</div>
           {safe !== "skip" && (
             <div className="flex flex-wrap gap-3">
-              <button type="button" className="btn-chunky tone-white flex-[1_1_180px]" style={{ boxShadow: "0 4px 0 var(--lilac)" }} onClick={() => setSafe("add")}>Add it</button>
-              <button type="button" className="btn-chunky flex-[1_1_180px]" onClick={() => setSafe("skip")}>Leave it out</button>
+              <button type="button" className="btn-chunky tone-white flex-[1_1_180px]" style={{ boxShadow: "0 4px 0 var(--lilac)" }} onClick={() => onSafe("add")}>Add it</button>
+              <button type="button" className="btn-chunky flex-[1_1_180px]" onClick={() => onSafe("skip")}>Leave it out</button>
             </div>
           )}
           <div role="status" aria-live="polite">
@@ -210,11 +244,16 @@ function Lesson({ onDone }: { onDone: () => void }) {
   );
 }
 
-function Practise({ checked, onCheck, onRetry }: { checked: boolean; onCheck: () => void; onRetry: () => void }) {
-  const [picked, setPicked] = useState<string[]>([]);
+function Practise({ checked, picked, onPick, onRemove, onCheck, onRetry }: {
+  checked: boolean;
+  picked: string[];
+  onPick: (id: string) => void;
+  onRemove: (id: string) => void;
+  onCheck: () => void;
+  onRetry: () => void;
+}) {
   const [over, setOver] = useState(false);
   const byId = Object.fromEntries(PIECES.map((p) => [p.id, p]));
-  const add = (id: string) => { setPicked((ps) => (ps.includes(id) ? ps : [...ps, id])); setOver(false); };
   const tiles = PIECES.filter((p) => !picked.includes(p.id));
   const right = scorePrompt(picked);
   const promptText = [START_PROMPT, ...picked.map((id) => byId[id]!.text)].join(" ");
@@ -245,7 +284,7 @@ function Practise({ checked, onCheck, onRetry }: { checked: boolean; onCheck: ()
               <div
                 onDragOver={(e) => { e.preventDefault(); if (!over) setOver(true); }}
                 onDragLeave={() => setOver(false)}
-                onDrop={(e) => { e.preventDefault(); const id = e.dataTransfer.getData("text/plain"); if (byId[id]) add(id); else setOver(false); }}
+                onDrop={(e) => { e.preventDefault(); const id = e.dataTransfer.getData("text/plain"); if (byId[id]) onPick(id); else setOver(false); }}
                 className="flex min-h-[190px] flex-1 flex-col gap-2.5 rounded-[18px] border-[3px] border-dashed p-4"
                 style={{ borderColor: over ? "var(--pink)" : "var(--line-strong)", background: over ? "var(--pink-tint)" : "var(--surface-soft)" }}
               >
@@ -259,7 +298,7 @@ function Practise({ checked, onCheck, onRetry }: { checked: boolean; onCheck: ()
                       type="button"
                       aria-label={`Remove: ${byId[id]!.text}`}
                       className="focus-ring flex h-9 w-9 flex-none items-center justify-center rounded-full border-0 bg-pink-tint"
-                      onClick={() => setPicked((ps) => ps.filter((x) => x !== id))}
+                      onClick={() => onRemove(id)}
                     >
                       <CrossIcon color="var(--pink-deep)" />
                     </button>
@@ -277,7 +316,7 @@ function Practise({ checked, onCheck, onRetry }: { checked: boolean; onCheck: ()
                   type="button"
                   draggable
                   onDragStart={(e) => { e.dataTransfer.setData("text/plain", t.id); e.dataTransfer.effectAllowed = "move"; }}
-                  onClick={() => add(t.id)}
+                  onClick={() => onPick(t.id)}
                   aria-label={`Add to prompt: ${t.text}`}
                   className="focus-ring flex w-full cursor-grab items-center gap-3 rounded-2xl border-0 bg-pink-soft px-4 py-3.5 text-left text-[17px] font-extrabold leading-[23px] transition-transform active:translate-y-1"
                   style={{ boxShadow: "0 4px 0 var(--pink-edge)" }}
@@ -341,7 +380,7 @@ function Practise({ checked, onCheck, onRetry }: { checked: boolean; onCheck: ()
               <p className="m-0 mt-1 font-display text-[28px] leading-[35px]">More information isn't always better. Relevant information is what matters.</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <button type="button" className="btn-chunky tone-white" style={{ boxShadow: "0 4px 0 var(--sun-edge)" }} onClick={() => { setPicked([]); onRetry(); }}>
+              <button type="button" className="btn-chunky tone-white" style={{ boxShadow: "0 4px 0 var(--sun-edge)" }} onClick={onRetry}>
                 Try again
               </button>
               <Link to="/" className="btn-chunky btn-night">Back to the map</Link>

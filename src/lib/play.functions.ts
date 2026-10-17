@@ -40,6 +40,20 @@ export const joinTeam = createServerFn({ method: "POST" })
     return { ok: true as const, playerId: player.id, teamName: team.name };
   });
 
+/** Move a student who already joined over to another team. */
+export const movePlayer = createServerFn({ method: "POST" })
+  .inputValidator((d: { playerId: string; teamId: string }) =>
+    z.object({ playerId: z.string().uuid(), teamId: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: team } = await supabaseAdmin.from("teams").select("id, name").eq("id", data.teamId).maybeSingle();
+    if (!team || team.name === LIVE_TEAM.name) return { ok: false as const, error: "That team isn't in this room." };
+    const { error } = await supabaseAdmin.from("players").update({ team_id: team.id }).eq("id", data.playerId);
+    if (error) return { ok: false as const, error: "Couldn't move you. Try again." };
+    return { ok: true as const, teamName: team.name };
+  });
+
 export const submitPrompt = createServerFn({ method: "POST" })
   .inputValidator((d: { playerId: string; text: string }) =>
     z.object({ playerId: z.string().uuid(), text: z.string().max(400) }).parse(d),
