@@ -128,7 +128,7 @@ function SayItClearly() {
             <Bolt mood="happy" s={START} width={58} />
           </div>
           <div className="min-w-0 flex-[1_1_360px]">
-            <h1 className="m-0 font-display text-[44px] leading-[50px] text-surface">Say It Clearly</h1>
+            <h1 className="m-0 font-display text-[44px] leading-[50px] title-coral">Say It Clearly</h1>
             <p className="m-0 mt-1 text-[17px] font-bold leading-6 text-sky-text">Bolt the robot chef follows your steps exactly, just like an AI follows a prompt. Can you get a perfect sandwich?</p>
           </div>
         </div>
