@@ -74,7 +74,7 @@ function Lesson({ onDone }: { onDone: () => void }) {
     ? "Not quite! Read the dashed words again, then try another part."
     : last
       ? `Yes! “${last.text}” is part ${last.n}: ${last.name} Next one!`
-      : "Look at the words with the dashed outline. Tap the part that matches.";
+      : "Find the piece with the dashed outline in the better prompt. What job does it do? Tap the matching card below.";
 
   return (
     <section className="card-raised flex flex-col gap-5 p-6">
@@ -189,11 +189,13 @@ function Lesson({ onDone }: { onDone: () => void }) {
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-end gap-3">
-        <button type="button" className="btn-chunky tone-blue min-w-[220px] !px-7 !py-4 !text-xl" disabled={safe !== "skip"} onClick={onDone}>
-          Let's practise
-        </button>
-      </div>
+      {safe === "skip" && (
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <button type="button" className="btn-chunky tone-blue min-w-[220px] !px-7 !py-4 !text-xl" onClick={onDone}>
+            Next: let's practise
+          </button>
+        </div>
+      )}
     </section>
   );
 }
@@ -214,7 +216,13 @@ function Practise({ checked, onCheck, onRetry }: { checked: boolean; onCheck: ()
         <div className="min-w-0 flex-[1_1_420px]">
           <div className="kicker text-pink-deep">Your mission</div>
           <p className="m-0 mt-1 font-display text-[26px] leading-[33px]">You're preparing a presentation about climate change.</p>
-          <p className="m-0 mt-1.5 text-[17px] font-bold leading-6 text-ink-muted">Your prompt is too short to get a good answer. Use the four parts to make it better!</p>
+          <p className="m-0 mt-1.5 text-[17px] font-bold leading-6 text-ink-muted">Your prompt, “{START_PROMPT}”, is too short to get a good answer.</p>
+          <ol className="m-0 mt-3 flex list-none flex-col gap-1.5 rounded-2xl bg-sun-tint p-3.5 text-[16px] font-bold leading-[22px]">
+            <li><strong>1.</strong> Look at the pink prompt pieces. Some help the AI, some don't.</li>
+            <li><strong>2.</strong> Tap (or drag) only the pieces that make the answer better for your presentation.</li>
+            <li><strong>3.</strong> Leave out pieces that share private information or ask for too much.</li>
+            <li><strong>4.</strong> Press <strong>Check my prompt</strong> to see how you did. Hint: 4 pieces help.</li>
+          </ol>
         </div>
       </section>
 
