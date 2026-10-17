@@ -14,7 +14,7 @@ const MODULES = [
 ];
 
 const GAMES = [
-  {t:'Sandwich Game', s:'Say It Clearly', icon:'sandwich', ready:true},
+  {t:'Sandwich Game', s:'Prompt It Clearly', icon:'sandwich', ready:true},
   {t:'Mistake Hunt', s:'Coming soon', icon:'search', ready:false},
   {t:'Spot the Secret', s:'Coming soon', icon:'shield', ready:false}
 ];
