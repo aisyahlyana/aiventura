@@ -24,3 +24,4 @@
 ## Classroom games
 
 - Keep classroom availability in a browser-safe game catalog; the chooser sits above the existing host lobby without routing into or embedding standalone gameplay.
+- Render the host lobby independently of stored room stages while classroom gameplay is disabled, so previously advanced rooms still show their QR code.

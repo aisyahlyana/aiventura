@@ -13,3 +13,5 @@
 - [x] Verify the sandwich launch and return path, availability tests and page layout.
 - [x] Restore the original QR room and team setup below the chooser, without loading standalone gameplay.
 - [x] Verify the real classroom room loads and chooser selection keeps the room code unchanged.
+- [ ] Remove the challenge button and teacher-drawing screens; always show the QR lobby.
+- [ ] Verify the QR lobby remains visible on reload with no challenge navigation.
