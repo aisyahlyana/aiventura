@@ -61,6 +61,7 @@ function FixThePrompt() {
 }
 
 function Lesson({ onDone }: { onDone: () => void }) {
+  const [intro, setIntro] = useState(true);
   const [qi, setQi] = useState(0);
   const [wrong, setWrong] = useState<string | null>(null);
   const [lastRight, setLastRight] = useState<string | null>(null);
@@ -76,27 +77,34 @@ function Lesson({ onDone }: { onDone: () => void }) {
       ? `Yes! “${last.text}” is part ${last.n}: ${last.name} Next one!`
       : "Tap the card that matches the dashed piece.";
 
+  if (intro) {
+    return (
+      <section className="card-raised flex flex-col items-center gap-5 p-8 text-center">
+        <Campi width={110} />
+        <span className="font-display text-[22px] leading-[28px] text-ink-muted">Here is a short prompt:</span>
+        <span className="font-display text-[40px] leading-[48px]">“Tell me about volcanoes.”</span>
+        <p className="m-0 max-w-[520px] text-[19px] font-bold leading-[27px] text-ink-muted">It isn't very specific, so the AI may not give you a helpful answer.</p>
+        <button type="button" className="btn-chunky tone-pink min-w-[240px] !px-8 !py-4 !text-2xl" onClick={() => setIntro(false)}>
+          Let's fix it!
+        </button>
+      </section>
+    );
+  }
+
   return (
     <section className="card-raised flex flex-col gap-5 p-6">
-      <div className="flex flex-wrap items-center gap-5">
-        <Campi width={96} />
-        <div className="min-w-0 flex-[1_1_380px]">
-          <div className="kicker text-blue-deep">Step 1 · Quick lesson</div>
-          <h2 className="m-0 mt-1 font-display text-[32px] leading-[38px]">The parts of a good prompt</h2>
-          <p className="m-0 mt-1.5 text-[17px] font-bold leading-6 text-ink-muted">A prompt is what you ask the AI. Good prompts have four parts. Let's find them!</p>
+      <div className="flex flex-wrap items-center justify-between gap-5">
+        <div className="flex flex-col gap-1">
+          <span className="font-display text-[18px] leading-[24px] text-ink-muted">Short prompt:</span>
+          <span className="font-display text-[28px] leading-[36px]">“Tell me about volcanoes.”</span>
         </div>
         <div className="flex gap-1" role="img" aria-label={`${earned} of 5 class stars`}>
           {[0, 1, 2, 3, 4].map((i) => <StarIcon key={i} size={30} filled={i < earned} />)}
         </div>
       </div>
 
-
       <div className="flex flex-col gap-3 rounded-[18px] bg-surface-soft px-5 py-[18px]">
-        <div className="flex flex-col gap-1">
-          <span className="font-display text-[20px] leading-[26px] text-ink-muted">Here is a short prompt:</span>
-          <span className="font-display text-[30px] leading-[38px]">“Tell me about volcanoes.”</span>
-        </div>
-        <div className="mt-2 font-display text-[22px] leading-[28px] text-blue-deep">This is a better prompt. What does each part do?</div>
+        <div className="font-display text-[24px] leading-[30px] text-blue-deep">Here is a more specific prompt. Match each part to what it does!</div>
         <div className="flex flex-wrap gap-2.5">
           {PARTS.map((p) => {
             const isSolved = solved.includes(p.id), cur = p.id === curId;
