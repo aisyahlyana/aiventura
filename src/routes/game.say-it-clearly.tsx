@@ -13,6 +13,7 @@ import {
 import { runBolt } from "@/lib/sayItClearly.functions";
 
 export const Route = createFileRoute("/game/say-it-clearly")({
+  validateSearch: (search: Record<string, unknown>) => ({ classPlay: search.classPlay === true || search.classPlay === "true" }),
   head: () => ({
     meta: [
       { title: "Say It Clearly · aiventura" },
@@ -30,6 +31,7 @@ type Screen = "write" | "watch" | "feedback";
 const STEP_MS = 2900;
 
 function SayItClearly() {
+  const { classPlay } = Route.useSearch();
   const run = useServerFn(runBolt);
   const [screen, setScreen] = useState<Screen>("write");
   const [steps, setSteps] = useState<string[]>([""]);
@@ -118,7 +120,7 @@ function SayItClearly() {
             <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-pink-soft">Phase 1 · Step 1 game</span>
             <StepPills steps={["Write", "Watch", "Feedback"]} current={pill} label={`Step ${pill + 1} of 3: ${["Write", "Watch", "Feedback"][pill]}`} />
           </div>
-          {screen === "write" ? <BackLink to="/journey" label="Journey map" /> : <BackScreen onClick={back} label="Edit steps" />}
+          {screen === "write" ? <BackLink to={classPlay ? "/play/host" : "/journey"} label={classPlay ? "Choose a game" : "Journey map"} /> : <BackScreen onClick={back} label="Edit steps" />}
         </div>
       </header>
 
