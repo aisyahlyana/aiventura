@@ -11,3 +11,5 @@
 # Classroom game chooser
 - [x] Replace the classroom entry with a game chooser and coming-soon placeholders.
 - [x] Verify the sandwich launch and return path, availability tests and page layout.
+- [ ] Restore the original QR room and team setup below the chooser, without loading standalone gameplay.
+- [ ] Verify the real classroom room loads and chooser selection keeps the room code unchanged.
