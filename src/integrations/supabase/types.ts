@@ -14,13 +14,162 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      players: {
+        Row: {
+          created_at: string
+          id: string
+          nickname: string
+          room_id: string
+          team_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nickname: string
+          room_id: string
+          team_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nickname?: string
+          room_id?: string
+          team_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "players_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "players_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prompts: {
+        Row: {
+          created_at: string
+          id: string
+          player_id: string | null
+          room_id: string
+          team_id: string
+          text: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          player_id?: string | null
+          room_id: string
+          team_id: string
+          text: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          player_id?: string | null
+          room_id?: string
+          team_id?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompts_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prompts_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prompts_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: true
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          clues: Json
+          code: string
+          created_at: string
+          favourite_team_id: string | null
+          id: string
+          stage: string
+          teacher_id: string
+        }
+        Insert: {
+          clues?: Json
+          code: string
+          created_at?: string
+          favourite_team_id?: string | null
+          id?: string
+          stage?: string
+          teacher_id: string
+        }
+        Update: {
+          clues?: Json
+          code?: string
+          created_at?: string
+          favourite_team_id?: string | null
+          id?: string
+          stage?: string
+          teacher_id?: string
+        }
+        Relationships: []
+      }
+      teams: {
+        Row: {
+          color: string
+          id: string
+          name: string
+          room_id: string
+          sort: number
+        }
+        Insert: {
+          color: string
+          id?: string
+          name: string
+          room_id: string
+          sort?: number
+        }
+        Update: {
+          color?: string
+          id?: string
+          name?: string
+          room_id?: string
+          sort?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      owns_room: { Args: { _room: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
