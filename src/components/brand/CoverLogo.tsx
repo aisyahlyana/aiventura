@@ -16,7 +16,6 @@ export function CoverLogo() {
           <path d="M42 55 q6 -8 12 0" stroke="var(--bolt-eye)" strokeWidth="4.5" fill="none" strokeLinecap="round"/>
           <path d="M66 55 q6 -8 12 0" stroke="var(--bolt-eye)" strokeWidth="4.5" fill="none" strokeLinecap="round"/>
         </g>
-        <path d="M53 62 q7 6 14 0" stroke="var(--bolt-eye)" strokeWidth="4" fill="none" strokeLinecap="round"/>
         <circle cx="39" cy="64" r="3.5" fill="#ff9a9a"/>
         <circle cx="81" cy="64" r="3.5" fill="#ff9a9a"/>
         <rect x="51" y="85" width="18" height="9" fill="var(--bolt-steel)" stroke={ink} strokeWidth="4"/>
