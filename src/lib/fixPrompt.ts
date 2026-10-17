@@ -30,8 +30,6 @@ export const PARTS: { id: PartId; n: number; name: string; tip: string; cardTip:
   { id: "how", n: 3, name: "How should it explain?", tip: "Asks for a helpful style.", cardTip: "Ask for a style that helps you: simple words, examples, steps.", text: "Use simple examples.", tone: "tone-sun" },
   { id: "much", n: 4, name: "How much?", tip: "Says how long the answer should be.", cardTip: "Say how long the answer should be, so you get just what you need.", text: "Give me 3 key facts.", tone: "tone-lilac" },
 ];
-/** Order the lesson quiz asks about the volcano phrases. */
-export const ASK_ORDER: PartId[] = ["what", "who", "much", "how"];
 
 export const SCORE_NOTES: Record<number, string> = {
   6: "Perfect! Every piece you picked helps, and you kept your personal information safe.",

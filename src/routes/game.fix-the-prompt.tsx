@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Campi, StarPage, StepPills } from "@/components/brand/Brand";
 import { BackIcon, CheckIcon, CrossIcon, GripIcon, LockIcon, PlayIcon, PlusIcon, PrintIcon, StarIcon, WrenchIcon } from "@/components/brand/Icons";
-import { ASK_ORDER, PARTS, PIECES, SCORE_NOTES, START_PROMPT, scorePrompt } from "@/lib/fixPrompt";
+import { PARTS, PIECES, SCORE_NOTES, START_PROMPT, scorePrompt, type PartId } from "@/lib/fixPrompt";
 import { completeStep } from "@/lib/journey";
 
 export const Route = createFileRoute("/game/fix-the-prompt")({
@@ -62,20 +62,22 @@ function FixThePrompt() {
 
 function Lesson({ onDone }: { onDone: () => void }) {
   const [intro, setIntro] = useState(true);
-  const [qi, setQi] = useState(0);
+  const [sel, setSel] = useState<PartId | null>(null);
+  const [solved, setSolved] = useState<PartId[]>([]);
   const [wrong, setWrong] = useState<string | null>(null);
   const [lastRight, setLastRight] = useState<string | null>(null);
   const [safe, setSafe] = useState<"add" | "skip" | null>(null);
-  const curId = ASK_ORDER[qi];
-  const solved = ASK_ORDER.slice(0, qi);
-  const quizDone = qi >= ASK_ORDER.length;
-  const earned = qi + (safe === "skip" ? 1 : 0);
+  const quizDone = solved.length >= PARTS.length;
+  const earned = solved.length + (safe === "skip" ? 1 : 0);
   const last = PARTS.find((p) => p.id === lastRight);
-  const fbText = wrong
-    ? "Not quite! Read the dashed words again, then try another part."
-    : last
-      ? `Yes! “${last.text}” is part ${last.n}: ${last.name} Next one!`
-      : "Tap the card that matches the dashed piece.";
+  const selPart = PARTS.find((p) => p.id === sel);
+  const fbText = wrong === "none"
+    ? "First tap a piece of the prompt above, then choose what it does."
+    : wrong
+      ? "Not quite! Try another job card."
+      : last
+        ? `Yes! “${last.text}” is part ${last.n}: ${last.name} Now tap another piece.`
+        : "Tap a piece of the prompt, then tap the card that says what it does.";
 
   if (intro) {
     return (
@@ -83,7 +85,7 @@ function Lesson({ onDone }: { onDone: () => void }) {
         <Campi width={110} />
         <span className="font-display text-[22px] leading-[28px] text-ink-muted">Here is a short prompt:</span>
         <span className="font-display text-[40px] leading-[48px]">“Tell me about volcanoes.”</span>
-        <p className="m-0 max-w-[520px] text-[19px] font-bold leading-[27px] text-ink-muted">It isn't very specific, so the AI may not give you a helpful answer.</p>
+        <p className="m-0 max-w-[520px] text-[19px] font-bold leading-[27px] text-ink-muted">It's too short — the AI has to guess what you really want, so the answer may not help you.</p>
         <button type="button" className="btn-chunky tone-pink min-w-[240px] !px-8 !py-4 !text-2xl" onClick={() => setIntro(false)}>
           Let's fix it!
         </button>
@@ -104,18 +106,22 @@ function Lesson({ onDone }: { onDone: () => void }) {
       </div>
 
       <div className="flex flex-col gap-3 rounded-[18px] bg-surface-soft px-5 py-[18px]">
-        <div className="font-display text-[24px] leading-[30px] text-blue-deep">Here is a more specific prompt. Match each part to what it does!</div>
+        <div className="font-display text-[24px] leading-[30px] text-blue-deep">Here is the same prompt, with more parts added. Match each piece to its job!</div>
         <div className="flex flex-wrap gap-2.5">
           {PARTS.map((p) => {
-            const isSolved = solved.includes(p.id), cur = p.id === curId;
+            const isSolved = solved.includes(p.id), isSel = p.id === sel;
             return (
-              <div
+              <button
                 key={p.id}
-                className={`${p.tone} relative rounded-xl border-[3px] px-3 py-2 text-xl font-extrabold leading-7`}
+                type="button"
+                disabled={isSolved}
+                aria-pressed={isSel}
+                onClick={() => { setSel(isSel ? null : p.id); setWrong(null); setLastRight(null); }}
+                className={`${p.tone} relative rounded-xl border-[3px] px-3 py-2 text-xl font-extrabold leading-7 transition-transform active:translate-y-0.5`}
                 style={{
-                  background: isSolved ? "var(--tint)" : cur ? "var(--surface)" : "var(--soft-grey)",
-                  borderColor: isSolved ? "var(--face)" : cur ? "var(--navy)" : "var(--soft-grey)",
-                  borderStyle: cur ? "dashed" : "solid",
+                  background: isSolved ? "var(--tint)" : isSel ? "var(--surface)" : "var(--soft-grey)",
+                  borderColor: isSolved ? "var(--face)" : isSel ? "var(--navy)" : "var(--soft-grey)",
+                  borderStyle: isSel ? "dashed" : "solid",
                 }}
               >
                 {p.text}
@@ -124,7 +130,7 @@ function Lesson({ onDone }: { onDone: () => void }) {
                     {p.n}
                   </span>
                 )}
-              </div>
+              </button>
             );
           })}
         </div>
@@ -135,9 +141,9 @@ function Lesson({ onDone }: { onDone: () => void }) {
           <div
             role="status"
             aria-live="polite"
-            className={`flex flex-wrap items-center gap-3 rounded-2xl px-4 py-3.5 ${wrong ? "bg-pink-tint" : last ? "bg-blue-tint" : "bg-sun-tint"}`}
+            className={`flex flex-wrap items-center gap-3 rounded-2xl px-4 py-3.5 ${wrong && wrong !== "none" ? "bg-pink-tint" : last ? "bg-blue-tint" : "bg-sun-tint"}`}
           >
-            <div className="font-display text-[22px] leading-7">Which part is this?</div>
+            <div className="font-display text-[22px] leading-7">{selPart ? "What does this part do?" : "Choose a piece"}</div>
             <div className="flex-[1_1_260px] text-base font-bold leading-[23px]">{fbText}</div>
           </div>
           <div className="grid gap-3.5" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))" }}>
@@ -148,7 +154,8 @@ function Lesson({ onDone }: { onDone: () => void }) {
                 className={`${p.tone} focus-ring flex flex-col gap-1.5 rounded-[18px] border-[3px] px-4 py-3.5 text-left transition-transform active:translate-y-1`}
                 style={{ borderColor: wrong === p.id ? "var(--pink-edge)" : "var(--tint)", background: "var(--tint)", boxShadow: "0 5px 0 var(--face)" }}
                 onClick={() => {
-                  if (p.id === ASK_ORDER[qi]) { setQi(qi + 1); setWrong(null); setLastRight(p.id); }
+                  if (!sel) { setWrong("none"); setLastRight(null); return; }
+                  if (p.id === sel) { setSolved((s) => [...s, p.id]); setSel(null); setWrong(null); setLastRight(p.id); }
                   else { setWrong(p.id); setLastRight(null); }
                 }}
               >
