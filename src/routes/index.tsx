@@ -6,10 +6,10 @@ import { useCameFrom } from "@/lib/back";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
-    { title: "aiventura · Learn critically, be safely with AI" },
-    { name: "description", content: "Write great prompts, spot mistakes and stay safe online, together as a class. An AI adventure for ages 10–12 and their teachers." },
+    { title: "aiventura · Learn to be critical & safe with AI" },
+    { name: "description", content: "Write great prompts, spot mistakes and stay safe online together! An AI adventure for ages 10–12 and their teachers." },
     { property: "og:title", content: "aiventura · Start the adventure" },
-    { property: "og:description", content: "Learn critically, be safely with AI. Start your whole-class adventure." },
+    { property: "og:description", content: "Learn to be critical & safe with AI. Start your whole-class adventure." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
   ] }),
@@ -25,8 +25,8 @@ function Cover() {
     <header className="cover-header">{from && <BackLink to={from} />}</header>
     <main className="cover-content">
       <CoverLogo />
-      <h1 className="cover-tagline">Learn critically, be safely with AI</h1>
-      <p className="cover-subline">Write great prompts, spot mistakes and stay safe online, together as a class.</p>
+      <h1 className="cover-tagline">Learn to be critical &amp; safe with AI</h1>
+      <p className="cover-subline">Write great prompts, spot mistakes and stay safe online together!</p>
       <div className="cover-cta-entrance"><div className="cover-cta-nudge">
         <Button asChild variant="adventure" size="adventure"><Link to="/journey">START THE ADVENTURE</Link></Button>
       </div></div>
@@ -36,7 +36,6 @@ function Cover() {
         <Button asChild variant="coverLink" size="coverLink"><Link to="/print/fix-the-prompt">Print for class</Link></Button>
       </nav>
     </main>
-    <footer className="cover-footer">For ages 10–12 and their teachers · No accounts or real names needed</footer>
     <div className="cover-ground" aria-hidden="true" />
   </div>;
 }
