@@ -59,12 +59,12 @@ function HostHeader({ stage }: { stage: Stage | null }) {
     <header className="relative border-b-2 border-white/15">
       <div className="mx-auto flex max-w-[1180px] flex-wrap items-center justify-between gap-4 px-6 py-3.5">
         <div className="flex flex-wrap items-center gap-[18px]">
-          <Link to="/" aria-label="Back to the journey map"><Wordmark height={60} /></Link>
+          <Link to="/journey" aria-label="Back to the journey map"><Wordmark height={60} /></Link>
           <span className="text-[15px] font-extrabold uppercase tracking-[.08em] text-pink-soft">Play in class · Draw our teacher</span>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {stage && <StepPills steps={["Join", "Write", "Reveal"]} current={idx} label={`Stage ${idx + 1} of 3: ${["Join", "Write", "Reveal"][idx]}`} />}
-          <BackLink to="/" label="Journey map" />
+          <BackLink to="/journey" label="Journey map" />
         </div>
       </div>
     </header>
@@ -517,7 +517,7 @@ function RevealStage({
         </div>
         <div className="flex flex-wrap gap-3">
           <button type="button" className="btn-chunky tone-white" style={{ boxShadow: "0 4px 0 var(--sun-edge)" }} onClick={onAgain}>Play again</button>
-          <Link to="/" className="btn-chunky btn-night">Back to the map</Link>
+          <Link to="/journey" className="btn-chunky btn-night">Back to the map</Link>
         </div>
       </section>
     </>

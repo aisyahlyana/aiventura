@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "@tanstack/react-router";
 
-const BACKABLE = ["/game/fix-the-prompt", "/print/fix-the-prompt", "/play/host", "/play/join"] as const;
+const BACKABLE = ["/", "/journey", "/game/fix-the-prompt", "/print/fix-the-prompt", "/play/host", "/play/join"] as const;
 export type BackableRoute = (typeof BACKABLE)[number];
-
+let current: BackableRoute | null = null;
 let cameFrom: BackableRoute | null = null;
 
-/** Runs on every page and remembers the last page you were on. */
+/** Track the previous distinct page, without inventing a back destination. */
 export function useTrackBack() {
   const path = useLocation().pathname;
   useEffect(() => {
-    if ((BACKABLE as readonly string[]).includes(path)) cameFrom = path as BackableRoute;
+    const next = BACKABLE.find((route) => route === path);
+    if (next && next !== current) { cameFrom = current; current = next; }
   }, [path]);
 }
 
-/** The page you came from, or null when the journey map is your first screen. */
 export function useCameFrom(): BackableRoute | null {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
