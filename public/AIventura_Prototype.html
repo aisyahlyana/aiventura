@@ -1,0 +1,601 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>AIventura Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: classroom projector on the left, the student's phone (or paper worksheet) on the right, "behind the scenes" note underneath */
+:root{
+  --bg:#EDF0F5; --surface:#FFFFFF; --ink:#1B2333; --muted:#596377; --line:#D5DBE5;
+  --jam:#A92D61; --jam-soft:#F7E4EC; --peanut:#B5781F; --peanut-soft:#F6EBD8; --ok:#2C7A57; --ok-soft:#E1F1E9;
+  --bezel:#1B2333;
+  --bread:#F2D9A8; --crust:#C98A4B; --pb:#9C5E28; --jelly:#8A2A5B; --plate:#FFFFFF; --plate-edge:#C9D1DD;
+  --glass:#E6ECF4; --lid:#55617A; --bag:#D7E4F2; --steel:#A3AEC0; --handle:#3E4A60; --robot:#7D8CA6; --table:#E3D2B6; --mark:#A92D61;
+  --display:"Fredoka", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F131A; --surface:#18202B; --ink:#E7EBF2; --muted:#A3ADBE; --line:#2C3646;
+  --jam:#E56E9E; --jam-soft:#3A1F2C; --peanut:#E2A94F; --peanut-soft:#382C1B; --ok:#5CC197; --ok-soft:#173327;
+  --bezel:#05070A; --plate:#2A3444; --plate-edge:#4A5669; --glass:#2A3444; --bag:#243549; --table:#4A3E2D; --mark:#E56E9E;
+  --handle:#7D8CA6; --lid:#8794AB; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F131A; --surface:#18202B; --ink:#E7EBF2; --muted:#A3ADBE; --line:#2C3646;
+  --jam:#E56E9E; --jam-soft:#3A1F2C; --peanut:#E2A94F; --peanut-soft:#382C1B; --ok:#5CC197; --ok-soft:#173327;
+  --bezel:#05070A; --plate:#2A3444; --plate-edge:#4A5669; --glass:#2A3444; --bag:#243549; --table:#4A3E2D; --mark:#E56E9E;
+  --handle:#7D8CA6; --lid:#8794AB; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:20px 32px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;letter-spacing:.005em}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--peanut);outline-offset:2px}
+
+/* Top bar */
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;flex-direction:column;gap:2px;min-width:0}
+.brand h1{font-size:28px}
+.brand h1 span{color:var(--jam)}
+.brand p{margin:0;color:var(--muted);font-size:14px}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;color:var(--muted);padding:7px 14px;border-radius:999px;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.ghost{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:999px;font-weight:700}
+
+/* Stage */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start}
+@media (max-width:920px){.stage{grid-template-columns:minmax(0,1fr)}}
+.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:8px}
+.projector{background:var(--bezel);border-radius:18px;padding:12px}
+.screen{background:var(--surface);border-radius:10px;min-height:540px;padding:clamp(18px,3vw,34px);display:flex;flex-direction:column;gap:18px;position:relative}
+.fade{animation:fade .35s ease}
+@keyframes fade{from{opacity:.25;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.fade{animation:none}*{transition:none!important}}
+
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--jam);font-weight:700}
+.screen h2{font-size:clamp(24px,3vw,34px);line-height:1.15}
+.screen .lead{font-size:clamp(16px,1.6vw,19px);color:var(--muted);margin:0;max-width:62ch}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.spacer{flex:1}
+.btn{border:0;border-radius:12px;padding:12px 20px;font-weight:700;font-size:16px;background:var(--jam);color:#fff}
+.btn.secondary{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.bottom-bar{margin-top:auto;display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding-top:6px}
+
+/* Library */
+.modules{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.module{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px;background:var(--surface);text-align:left;color:var(--ink)}
+.module .num{font-family:var(--display);font-size:13px;color:var(--muted)}
+.module h3{font-size:18px}
+.module p{margin:0;color:var(--muted);font-size:14px}
+.module.active{border:2px solid var(--jam);background:var(--jam-soft)}
+.module.soon{opacity:.6}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg);color:var(--muted);align-self:flex-start}
+.module.active .tag{background:var(--jam);color:#fff}
+.settings{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:700}
+.field select{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+
+/* Lobby */
+.lobby{display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center}
+@media (max-width:640px){.lobby{grid-template-columns:minmax(0,1fr)}}
+.joinbox{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px;border:1px solid var(--line);border-radius:16px}
+.qr{width:150px;height:150px;max-width:100%}
+.qr rect{fill:var(--ink)}
+.code{font-family:var(--display);font-size:38px;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.small{font-size:13px;color:var(--muted)}
+.count{font-family:var(--display);font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.avatars{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;animation:pop .25s ease}
+.av svg{width:18px;height:18px}
+.av.c0{background:var(--jam-soft)} .av.c1{background:var(--peanut-soft)} .av.c2{background:var(--ok-soft)} .av.c3{background:var(--bg)}
+.av.me{outline:3px solid var(--jam);outline-offset:2px}
+@keyframes pop{from{transform:scale(.3)}to{transform:none}}
+
+/* Task */
+.task{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:center}
+@media (max-width:640px){.task{grid-template-columns:minmax(0,1fr)}}
+.prompt-card{font-family:var(--display);font-weight:500;font-size:clamp(22px,2.6vw,30px);line-height:1.25}
+.scene{width:100%;max-width:420px;height:auto}
+.progress{display:flex;flex-direction:column;gap:6px;min-width:220px;flex:1}
+.bar{height:12px;background:var(--bg);border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:999px;transition:width .3s}
+.timer{font-family:var(--display);font-size:44px;font-variant-numeric:tabular-nums}
+
+/* Sorting */
+.flow{display:flex;flex-direction:column;gap:12px;max-width:560px}
+.flow-step{display:flex;gap:14px;align-items:center;padding:14px 16px;border:1px solid var(--line);border-radius:14px;opacity:.35;transition:opacity .3s,border-color .3s}
+.flow-step.on{opacity:1;border-color:var(--ok)}
+.flow-step b{font-family:var(--display);font-size:13px;color:var(--muted);min-width:64px}
+.flow-step.on b{color:var(--ok)}
+
+/* Scenario */
+.scen-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pill{font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--bg);color:var(--muted)}
+.pill.good{background:var(--ok-soft);color:var(--ok)}
+.pill.you{background:var(--peanut-soft);color:var(--peanut)}
+.scen{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center}
+@media (max-width:700px){.scen{grid-template-columns:minmax(0,1fr)}}
+.bubble{background:var(--bg);border-radius:16px 16px 16px 4px;padding:14px 16px;font-size:17px;position:relative}
+.bubble small{display:block;font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.did{font-size:18px;margin:0}
+.did strong{font-family:var(--display);font-weight:600}
+.ask{border:2px dashed var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.ask p{margin:0;font-size:17px;flex:1;min-width:200px}
+.ask .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;display:block}
+.fix{background:var(--ok-soft);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:16px;width:100%}
+.fix b{color:var(--ok)}
+.hands{display:flex;align-items:center;gap:8px}
+.hands button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:700;font-size:18px}
+.hands .n{font-family:var(--display);font-size:24px;min-width:28px;text-align:center;font-variant-numeric:tabular-nums}
+.big-count{font-family:var(--display);font-size:clamp(20px,2.4vw,26px)}
+.big-count em{font-style:normal;color:var(--jam)}
+
+/* Wrap-up */
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.tip{border:1px solid var(--line);border-radius:14px;padding:16px}
+.tip h3{font-size:19px;margin-bottom:4px}
+.tip p{margin:0;color:var(--muted)}
+
+/* Illustration classes */
+.s-table{fill:var(--table)} .s-bread{fill:var(--bread)} .s-crust{fill:var(--crust)} .s-pb{fill:var(--pb)} .s-jelly{fill:var(--jelly)}
+.s-plate{fill:var(--plate)} .s-plate-edge{fill:var(--plate-edge)} .s-glass{fill:var(--glass);stroke:var(--plate-edge);stroke-width:2}
+.s-lid{fill:var(--lid)} .s-bag{fill:var(--bag);stroke:var(--plate-edge);stroke-width:2} .s-steel{fill:var(--steel)} .s-handle{fill:var(--handle)}
+.s-robot{fill:var(--robot)} .s-mark{fill:var(--mark);font-family:var(--display);font-weight:600} .s-spark{fill:var(--peanut)}
+.s-jarlabel{fill:#fff;font-family:var(--display);font-weight:600;font-size:13px}
+.s-tie{fill:var(--jam)}
+
+/* Phone */
+.phone{width:280px;max-width:100%;margin:0 auto;background:var(--bezel);border-radius:38px;padding:12px}
+.phone-screen{background:var(--surface);border-radius:28px;min-height:520px;padding:22px 16px 16px;display:flex;flex-direction:column;gap:12px;position:relative}
+.notch{width:90px;height:20px;background:var(--bezel);border-radius:0 0 12px 12px;position:absolute;top:0;left:50%;transform:translateX(-50%)}
+.ph-title{font-family:var(--display);font-size:20px;font-weight:600;text-align:center;margin-top:18px}
+.ph-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center}
+.ph-input{font:inherit;font-family:var(--display);font-size:28px;letter-spacing:.1em;text-align:center;width:100%;padding:10px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.ph-btn{width:100%;border:0;border-radius:12px;padding:12px;font-weight:700;background:var(--jam);color:#fff;font-size:16px}
+.ph-btn:disabled{opacity:.45;cursor:not-allowed}
+.chat{flex:1;display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.msg{padding:10px 12px;border-radius:14px;font-size:14px;max-width:92%}
+.msg.bot{background:var(--bg);border-radius:14px 14px 14px 4px;align-self:flex-start}
+.msg.me{background:var(--jam);color:#fff;border-radius:14px 14px 4px 14px;align-self:flex-end;white-space:pre-wrap;overflow-wrap:anywhere}
+.composer{display:flex;flex-direction:column;gap:8px}
+.composer textarea{font:inherit;font-size:14px;width:100%;min-height:120px;resize:vertical;padding:10px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink)}
+.hint{font-size:12px;color:var(--muted);text-align:center;margin:0}
+.ph-av{width:64px;height:64px;border-radius:50%;background:var(--jam-soft);display:grid;place-items:center}
+.ph-av svg{width:36px;height:36px}
+
+/* Worksheet */
+.worksheet{background:#FFFFFF;color:#1B2333;border-radius:6px;padding:20px 18px;box-shadow:0 1px 0 #00000010,0 8px 24px #0000001a;display:flex;flex-direction:column;gap:10px;font-size:13px;width:280px;max-width:100%;margin:0 auto;transform:rotate(-1deg)}
+.worksheet h3{font-size:16px}
+.worksheet .msg.bot{background:#EDF0F5;color:#1B2333}
+.lines{display:flex;flex-direction:column;gap:0;margin-top:2px}
+.lines span{display:block;height:26px;border-bottom:1px solid #C9D1DD}
+.worksheet .foot{display:flex;justify-content:space-between;color:#596377;font-size:11px}
+
+/* Behind the scenes */
+.behind{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.behind .tool{font-family:var(--display);font-weight:600;font-size:14px;padding:4px 10px;border-radius:999px;background:var(--peanut-soft);color:var(--peanut);white-space:nowrap}
+.behind p{margin:0;flex:1;min-width:220px;max-width:80ch}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.steps span{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+.steps span.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>AI<span>ventura</span></h1>
+      <p>Clickable prototype. Click through the big screen, and type your own answer on the phone.</p>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Classroom mode">
+        <button id="modeDevices" aria-pressed="true">With devices</button>
+        <button id="modePaper" aria-pressed="false">Paper only</button>
+      </div>
+      <button class="ghost" id="restart">Restart</button>
+    </div>
+  </header>
+
+  <div class="steps" id="steps"></div>
+
+  <main class="stage">
+    <section>
+      <div class="label">Classroom screen (projected by the teacher)</div>
+      <div class="projector"><div class="screen" id="screen"></div></div>
+    </section>
+    <aside>
+      <div class="label" id="sideLabel">Student phone</div>
+      <div id="side"></div>
+    </aside>
+  </main>
+
+  <section class="behind" aria-live="polite">
+    <div class="label" style="margin:0;align-self:center">Behind the scenes</div>
+    <span class="tool" id="behindTool">Lovable</span>
+    <p id="behindText"></p>
+  </section>
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- Content ---------- */
+const MODULES = [
+  {t:'Talking to AI', d:'Give clear instructions. Today: the sandwich challenge.'},
+  {t:'Thinking critically', d:'AI can be wrong or make things up.'},
+  {t:'When to stop asking AI', d:'Some things need your own thinking.'},
+  {t:'Staying safe', d:'What you should never tell an AI.'},
+  {t:'When to ask an adult', d:'Some situations need a real person.'},
+  {t:'Behaving well with AI', d:'Respect, consent and kindness.'}
+];
+
+const CATS = {
+  1:{title:'Too vague', did:'The computer doesn’t know what a “sandwich” is. It waits… and does nothing.',
+     ask:'What does the computer need to know before it can start?', fix:'Break it into small steps: what to pick up first, and what to do with it.',
+     ex:'Make a peanut butter and jelly sandwich.'},
+  2:{title:'Forgot to open things', did:'You said “put peanut butter on the bread”, so it put the whole closed jar on the closed bag.',
+     ask:'What did we forget to tell it?', fix:'Open the bread bag, take out two slices, and open the jars.',
+     ex:'Put peanut butter on the bread and then the jelly.'},
+  3:{title:'No tool', did:'Nobody said how to spread it, so it scooped the peanut butter with its hand.',
+     ask:'What should it use, and how?', fix:'Pick up the knife and use it to spread.',
+     ex:'Open the bag and the jars. Put peanut butter on one slice and jelly on the other.'},
+  4:{title:'Steps in the wrong order', did:'It followed your order exactly, so the jelly landed on the plate before the bread arrived.',
+     ask:'Which step should come first?', fix:'Bread first, then the spreads. Computers do things in the order you say.',
+     ex:'Open the jelly and spread it with the knife. Then take out the bread.'},
+  5:{title:'Almost there', did:'Great steps! But nobody said to close it, so it stopped with two open slices.',
+     ask:'What’s the very last step?', fix:'Put one slice on top of the other.',
+     ex:'Open the bag, take two slices, open both jars, use the knife to spread peanut butter on one slice and jelly on the other.'},
+  6:{title:'Clear and complete', did:'Every step was clear and in order. Here’s your sandwich!',
+     ask:'What made these instructions work?', fix:'They were specific, in order, and said what the result should be.',
+     ex:'Open the bread bag and take out 2 slices. Open the peanut butter. Use the knife to spread it on one slice. Open the jelly and spread it on the other slice. Put the slices together.'}
+};
+
+/* 23 example classmates (simulated) with their category */
+const SIM = [
+ ['Make a sandwich.',1],['Put peanut butter on the bread and jelly on top',2],['Open the bag and the jars and put peanut butter on a slice',3],
+ ['do a peanut butter sandwich',1],['Peanut butter on bread, then jelly, then eat it',2],['Take two slices out, open the jars, put the peanut butter and the jelly on',3],
+ ['Put bread on a plate and add peanut butter',2],['Open everything, take the bread, use the knife for peanut butter and jelly on each slice',5],
+ ['Spread jelly with the knife then get the bread out',4],['sandwich with jelly pls',1],['Add peanut butter to one slice and jelly to the other',2],
+ ['Open the jars, take bread, put the stuff on it',3],['Open the bag, take 2 slices, open the jars, knife: peanut butter on one, jelly on the other',5],
+ ['Take bread, put peanut butter and jelly',2],['Open the jars and the bag, then add peanut butter and jelly to the bread',3],
+ ['Make a PB&J',1],['Peanut butter + jelly + bread',2],['Open the bag, take slices, open both jars, spread with the knife on each slice',5],
+ ['Open jelly, spread on the plate with knife, then put the bread',4],['Open the bag and take two slices out and open the jars and put it on',3],
+ ['Put the peanut butter and jelly on the bread',2],['Take out 2 slices, open jars, use the knife to spread peanut butter on one and jelly on the other',5],
+ ['Open the bread bag and take 2 slices. Open the peanut butter and use the knife to spread it on one slice. Open the jelly and spread it on the other. Put the slices together.',6]
+];
+
+/* Stand-in for the AI step: a simple keyword rule */
+function categorize(text){
+  const t = ' ' + text.toLowerCase() + ' ';
+  const words = t.trim().split(/\s+/).length;
+  const food = /bread|slice|pan |pane|rebanada|fetta|peanut|cacahuete|mantequilla|jelly|jam|mermelada|marmellata/.test(t);
+  if (words < 5 || !food) return 1;
+  if (!/open|abr|apri|take out|saca|unscrew|desenrosc/.test(t)) return 2;
+  if (!/knife|cuchillo|coltello|spoon|cuchara|cucchiaio/.test(t)) return 3;
+  const sp = t.search(/spread|unta|extiend|spalm/), br = t.search(/bread|slice|pan |rebanada|pane|fetta/);
+  if (sp >= 0 && br >= 0 && sp < br) return 4;
+  if (!/together|on top|top of|close|cover|junta|encima|cierra|tapa|chiudi|sopra|insieme/.test(t)) return 5;
+  return 6;
+}
+
+/* ---------- Illustrations ---------- */
+const breadPath = (x,y,w,h) => `M${x} ${y+h} L${x} ${y+20} Q${x} ${y} ${x+16} ${y+4} Q${x+w/2} ${y-10} ${x+w-16} ${y+4} Q${x+w} ${y} ${x+w} ${y+20} L${x+w} ${y+h} Z`;
+function slice(x,y,w,h,spread){
+  let s = `<path d="${breadPath(x,y,w,h)}" class="s-crust"/><path d="${breadPath(x+6,y+7,w-12,h-12)}" class="s-bread"/>`;
+  if (spread) s += `<ellipse cx="${x+w/2}" cy="${y+h/2+4}" rx="${w/2-15}" ry="${h/2-16}" class="s-${spread}"/>`;
+  return s;
+}
+function jar(x,y,kind,open){
+  let s = `<rect x="${x}" y="${y}" width="44" height="54" rx="9" class="s-glass"/><rect x="${x+5}" y="${y+14}" width="34" height="35" rx="6" class="s-${kind}"/>`;
+  s += `<text x="${x+22}" y="${y+36}" text-anchor="middle" class="s-jarlabel">${kind==='pb'?'PB':'J'}</text>`;
+  s += open ? `<rect x="${x+48}" y="${y+44}" width="40" height="10" rx="4" class="s-lid"/>` : `<rect x="${x-3}" y="${y-9}" width="50" height="13" rx="5" class="s-lid"/>`;
+  return s;
+}
+function bag(x,y){
+  let s = `<rect x="${x}" y="${y}" width="92" height="110" rx="18" class="s-bag"/>`;
+  for (let i=0;i<6;i++) s += `<rect x="${x+12+i*12}" y="${y+28}" width="10" height="70" rx="4" class="s-bread"/>`;
+  s += `<rect x="${x+39}" y="${y-7}" width="14" height="14" rx="3" class="s-tie"/>`;
+  return s;
+}
+const knife = (x,y) => `<g transform="translate(${x} ${y})"><rect x="0" y="0" width="34" height="10" rx="4" class="s-handle"/><path d="M34 1 L82 2 Q90 5 82 9 L34 9 Z" class="s-steel"/></g>`;
+const plate = (cx,rx) => `<ellipse cx="${cx}" cy="188" rx="${rx}" ry="12" class="s-plate-edge"/><ellipse cx="${cx}" cy="186" rx="${rx-10}" ry="8" class="s-plate"/>`;
+const star = (cx,cy,r) => `<path d="M${cx} ${cy-r} Q${cx} ${cy} ${cx+r} ${cy} Q${cx} ${cy} ${cx} ${cy+r} Q${cx} ${cy} ${cx-r} ${cy} Q${cx} ${cy} ${cx} ${cy-r}Z" class="s-spark"/>`;
+const table = `<rect x="0" y="190" width="360" height="30" rx="4" class="s-table"/>`;
+const svg = (inner,label) => `<svg class="scene" viewBox="0 0 360 220" role="img" aria-label="${esc(label)}">${table}${inner}</svg>`;
+
+function scene(cat){
+  switch(cat){
+    case 'task': return svg(bag(20,80)+jar(140,136,'pb',false)+jar(200,136,'jelly',false)+knife(262,180),'Bread bag, peanut butter jar, jelly jar and a knife on the table');
+    case 1: return svg(bag(26,80)+jar(146,136,'pb',false)+jar(204,136,'jelly',false)+knife(250,180)+`<text x="318" y="120" text-anchor="middle" font-size="80" class="s-mark">?</text>`,'The computer is confused and nothing happens');
+    case 2: return svg(bag(70,80)+jar(94,25,'pb',false)+jar(200,136,'jelly',false)+knife(252,180),'A closed peanut butter jar placed on top of the closed bread bag');
+    case 3: return svg(plate(150,100)+slice(100,104,100,82)+`<path d="M120 142 q10 -14 26 -6 q14 -12 28 2 q12 10 2 22 q-6 14 -24 8 q-16 8 -26 -4 q-14 -8 -6 -22z" class="s-pb"/>`
+      +`<rect x="232" y="0" width="22" height="52" rx="6" class="s-robot"/><rect x="208" y="46" width="54" height="36" rx="10" class="s-robot"/>`
+      +[0,1,2].map(i=>`<rect x="${213+i*16}" y="76" width="11" height="26" rx="5" class="s-robot"/><rect x="${213+i*16}" y="92" width="11" height="10" rx="4" class="s-pb"/>`).join('')
+      +jar(14,136,'pb',true)+knife(262,180),'A robot hand scooping peanut butter onto the bread');
+    case 4: return svg(plate(140,100)+`<ellipse cx="140" cy="182" rx="52" ry="7" class="s-jelly"/>`+slice(258,116,72,74)+jar(16,136,'jelly',true),'Jelly spread on the empty plate, bread still to the side');
+    case 5: return svg(plate(180,150)+slice(78,104,96,82,'pb')+slice(186,104,96,82,'jelly'),'Two open slices side by side, one with peanut butter and one with jelly');
+    case 6: return svg(plate(180,120)+`<rect x="110" y="156" width="140" height="26" rx="10" class="s-crust"/><rect x="116" y="160" width="128" height="18" rx="8" class="s-bread"/>`
+      +`<rect x="114" y="146" width="132" height="12" rx="6" class="s-jelly"/><rect x="114" y="135" width="132" height="12" rx="6" class="s-pb"/>`
+      +`<path d="M110 138 Q110 106 140 104 L220 104 Q250 106 250 138 Z" class="s-crust"/><path d="M116 134 Q118 112 142 110 L218 110 Q242 112 244 134 Z" class="s-bread"/>`
+      +star(86,104,12)+star(282,90,14)+star(300,140,9)+star(66,150,8),'A finished sandwich');
+  }
+}
+const robotIcon = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="12" rx="4" fill="var(--jam)"/><rect x="11" y="3" width="2" height="4" fill="var(--jam)"/><circle cx="9.5" cy="13" r="1.6" fill="#fff"/><circle cx="14.5" cy="13" r="1.6" fill="#fff"/></svg>`;
+
+function qrSvg(){
+  let seed = 482913, rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+  const n=25, cells=[];
+  const finder = (r,c) => (r<7&&c<7)||(r<7&&c>=n-7)||(r>=n-7&&c<7);
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+    let on;
+    if(finder(r,c)){const rr=r>=n-7?r-(n-7):r, cc=c>=n-7?c-(n-7):c; on = rr===0||rr===6||cc===0||cc===6||(rr>=2&&rr<=4&&cc>=2&&cc<=4);}
+    else if((r<8&&c<8)||(r<8&&c>=n-8)||(r>=n-8&&c<8)) on=false;
+    else on = rnd()>0.52;
+    if(on) cells.push(`<rect x="${c}" y="${r}" width="1.02" height="1.02"/>`);
+  }
+  return `<svg class="qr" viewBox="0 0 ${n} ${n}" role="img" aria-label="QR code to join (illustration)">${cells.join('')}</svg>`;
+}
+
+/* ---------- State ---------- */
+const S = {mode:'devices', step:'library', joined:0, userJoined:false, answered:0, userAnswer:'', userCat:null,
+           groups:[], idx:0, hands:{1:0,2:0,3:0,4:0,5:0,6:0}, phone:'join', fixShown:false, timer:180, draft:''};
+let timers = [];
+const clearTimers = () => { timers.forEach(t => {clearInterval(t); clearTimeout(t);}); timers = []; };
+const total = () => 23 + (S.userJoined ? 1 : 0);
+
+function go(step){
+  clearTimers(); S.step = step; S.fixShown = false;
+  if (step === 'lobby' && S.mode === 'devices'){
+    timers.push(setInterval(() => { if (S.joined < 23){ S.joined++; render(); } else clearTimers(); }, 180));
+  }
+  if (step === 'task'){
+    if (S.mode === 'devices'){
+      S.answered = 0; S.userAnswer=''; S.userCat=null;
+      if (S.userJoined) S.phone = 'answer';
+      timers.push(setInterval(() => { if (S.answered < 23){ S.answered++; render(); } }, 420));
+    } else {
+      S.timer = 180;
+      timers.push(setInterval(() => { if (S.timer > 0){ S.timer--; renderScreen(); } }, 1000));
+    }
+  }
+  if (step === 'sorting'){
+    timers.push(setTimeout(() => { buildGroups(); S.idx = 0; go('scenario'); }, 2700));
+  }
+  if (step === 'scenario' && S.mode === 'paper' && !S.groups.length){ buildGroups(); }
+  render();
+}
+
+function buildGroups(){
+  if (S.mode === 'paper'){
+    S.groups = [1,2,3,4,5,6].map(c => ({cat:c, count:null, example:CATS[c].ex, mine:false}));
+    return;
+  }
+  const answers = SIM.slice(0, Math.max(S.answered, 0)).map(([t,c]) => ({t,c,mine:false}));
+  if (S.userAnswer) answers.push({t:S.userAnswer, c:S.userCat, mine:true});
+  const groups = [];
+  for (let c=1;c<=6;c++){
+    const inCat = answers.filter(a => a.c === c);
+    if (!inCat.length && c !== 6) continue;
+    const mine = inCat.find(a => a.mine);
+    const pick = mine || inCat.slice().sort((a,b)=>a.t.length-b.t.length)[0];
+    groups.push({cat:c, count:inCat.length, example: pick ? pick.t : CATS[c].ex, mine: !!mine});
+  }
+  S.groups = groups;
+}
+
+function restart(){
+  clearTimers();
+  Object.assign(S, {step:'library', joined:0, userJoined:false, answered:0, userAnswer:'', userCat:null, groups:[], idx:0,
+                    hands:{1:0,2:0,3:0,4:0,5:0,6:0}, phone:'join', fixShown:false, timer:180, draft:''});
+  render();
+}
+function setMode(m){ S.mode = m; restart(); }
+
+/* ---------- Render: classroom screen ---------- */
+function renderScreen(){
+  const el = $('screen'); let h = '';
+  const st = S.step, dev = S.mode === 'devices';
+
+  if (st === 'library'){
+    h = `<div><div class="eyebrow">Teacher view</div><h2>Choose a lesson</h2></div>
+    <div class="modules">${MODULES.map((m,i)=>`
+      <div class="module ${i===0?'active':'soon'}"><span class="num">Module ${i+1}</span><h3>${m.t}</h3><p>${m.d}</p>
+      <span class="tag">${i===0?'Ready':'Coming soon'}</span></div>`).join('')}</div>
+    <div class="settings">
+      <label class="field">Age<select id="age"><option>10–12</option></select></label>
+      <label class="field">Language<select id="lang"><option>Español</option><option selected>English</option><option>Italiano</option></select></label>
+      <label class="field">Classroom<select id="modeSel"><option value="devices" ${dev?'selected':''}>Students have devices</option><option value="paper" ${!dev?'selected':''}>Paper only</option></select></label>
+      <span class="spacer"></span>
+      <button class="btn" id="startLesson">Start Module 1</button>
+    </div>`;
+  }
+
+  if (st === 'lobby'){
+    if (dev){
+      h = `<div><div class="eyebrow">Module 1 · Talking to AI</div><h2>Join the sandwich challenge</h2></div>
+      <div class="lobby">
+        <div class="joinbox">${qrSvg()}<span class="small">or go to aiventura.app and type</span><span class="code">482 913</span></div>
+        <div><div class="count">${S.joined + (S.userJoined?1:0)}</div><div class="small">students joined · no names, no accounts</div>
+          <div class="avatars">${Array.from({length:S.joined},(_,i)=>`<span class="av c${i%4}">${robotIcon}</span>`).join('')}${S.userJoined?`<span class="av c0 me" title="You">${robotIcon}</span>`:''}</div>
+        </div>
+      </div>
+      <div class="bottom-bar"><span class="small">Tip: join on the phone on the right with code 482 913.</span><span class="spacer"></span><button class="btn" id="toTask">Start the challenge</button></div>`;
+    } else {
+      h = `<div><div class="eyebrow">Module 1 · Talking to AI · Paper mode</div><h2>Hand out the worksheets</h2></div>
+      <p class="lead">Each student gets a printed sheet that looks like a chat with an AI. They write their instructions by hand. No phones or tablets needed.</p>
+      <div class="bottom-bar"><span class="spacer"></span><button class="btn" id="toTask">Show the challenge</button></div>`;
+    }
+  }
+
+  if (st === 'task'){
+    const tot = total();
+    h = `<div class="eyebrow">The challenge</div>
+    <div class="task"><div class="prompt-card">Give the computer instructions to make a peanut butter and jelly sandwich.</div>${scene('task')}</div>
+    <p class="lead">Pretend the computer has never made a sandwich. It will do <em>exactly</em> what you write.</p>`;
+    if (dev){
+      const done = S.answered + (S.userAnswer?1:0);
+      h += `<div class="bottom-bar"><div class="progress"><span><b style="font-variant-numeric:tabular-nums">${done} / ${tot}</b> answered</span><div class="bar"><i style="width:${Math.round(done/tot*100)}%"></i></div></div>
+      <button class="btn" id="reveal">See what the computer understood</button></div>`;
+    } else {
+      const m = Math.floor(S.timer/60), s = String(S.timer%60).padStart(2,'0');
+      h += `<div class="bottom-bar"><div><div class="timer">${m}:${s}</div><span class="small">Writing time on paper</span></div><span class="spacer"></span><button class="btn" id="reveal">Everyone’s done: show what could happen</button></div>`;
+    }
+  }
+
+  if (st === 'sorting'){
+    h = `<div><div class="eyebrow">One moment</div><h2>Sorting your answers into groups…</h2></div>
+    <div class="flow">
+      <div class="flow-step on" id="f1"><b>Lovable</b><span>All ${S.answered + (S.userAnswer?1:0)} answers are sent to Make (names are never collected)</span></div>
+      <div class="flow-step" id="f2"><b>Make + AI</b><span>The AI puts each answer into one of 6 groups</span></div>
+      <div class="flow-step" id="f3"><b>Lovable</b><span>Groups come back to this screen, counted and anonymous</span></div>
+    </div>`;
+    timers.push(setTimeout(()=>{const e=$('f2'); e && e.classList.add('on');}, 850));
+    timers.push(setTimeout(()=>{const e=$('f3'); e && e.classList.add('on');}, 1700));
+  }
+
+  if (st === 'scenario'){
+    const g = S.groups[S.idx], c = CATS[g.cat], n = S.groups.length;
+    const countLine = dev
+      ? (g.count ? `<div class="big-count"><em>${g.count}</em> of you wrote something like this</div>` : `<div class="big-count">Nobody got here yet. Here’s what clear instructions look like</div>`)
+      : `<div class="row"><div class="big-count">If you wrote something like this…</div><span class="spacer"></span>
+         <div class="hands" aria-label="Raised hands"><span class="small">Hands up:</span><button id="hMinus" aria-label="One fewer">−</button><span class="n">${S.hands[g.cat]}</span><button id="hPlus" aria-label="One more">+</button></div></div>`;
+    h = `<div class="scen-head"><span class="pill">${S.idx+1} of ${n}</span><span class="pill ${g.cat===6?'good':''}">${c.title}</span>
+      ${g.mine?'<span class="pill you">Prototype note: your answer is in this group</span>':''}</div>
+    ${countLine}
+    <div class="scen">
+      <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+        <div class="bubble"><small>${dev && g.count ? 'One answer from this group' : 'Example answer'}</small>${esc(g.example)}</div>
+        <p class="did"><strong>What the computer did:</strong> ${c.did}</p>
+      </div>
+      <div>${scene(g.cat)}</div>
+    </div>
+    <div class="ask"><p><span class="k">Ask the class</span>${c.ask}</p>
+      ${S.fixShown ? `<div class="fix"><b>${g.cat===6?'Why it worked:':'The fix:'}</b> ${c.fix}</div>` : `<button class="btn secondary" id="showFix">Show the fix</button>`}</div>
+    <div class="bottom-bar"><button class="btn secondary" id="prev" ${S.idx===0?'disabled':''}>Back</button><span class="spacer"></span>
+      <button class="btn" id="next">${S.idx===n-1?'Wrap up':'Next group'}</button></div>`;
+  }
+
+  if (st === 'wrap'){
+    h = `<div><div class="eyebrow">What we learned</div><h2>Computers do exactly what we say. So say it clearly.</h2></div>
+    <div class="tips">
+      <div class="tip"><h3>Be specific</h3><p>Say exactly what to pick up and what to do with it.</p></div>
+      <div class="tip"><h3>Put steps in order</h3><p>The computer follows your order, even when it makes no sense.</p></div>
+      <div class="tip"><h3>Say what you want at the end</h3><p>“Put the slices together” finishes the job.</p></div>
+    </div>
+    <p class="lead">Next lesson: <b>Thinking critically</b>. What if the computer sounds sure, but it’s wrong?</p>
+    <div class="bottom-bar"><button class="btn secondary" id="toLib">Back to lessons</button><span class="spacer"></span><button class="btn" id="again">Try again with better instructions</button></div>`;
+  }
+
+  el.innerHTML = `<div class="fade" style="display:flex;flex-direction:column;gap:18px;flex:1">${h}</div>`;
+
+  const on = (id, fn) => { const b = $(id); if (b) b.onclick = fn; };
+  on('startLesson', () => go('lobby'));
+  const ms = $('modeSel'); if (ms) ms.onchange = e => { setMode(e.target.value); };
+  on('toTask', () => go('task'));
+  on('reveal', () => { if (S.mode==='devices') go('sorting'); else { buildGroups(); S.idx=0; go('scenario'); } });
+  on('showFix', () => { S.fixShown = true; renderScreen(); });
+  on('prev', () => { S.idx--; S.fixShown=false; render(); });
+  on('next', () => { if (S.idx < S.groups.length-1){ S.idx++; S.fixShown=false; render(); } else go('wrap'); });
+  on('hPlus', () => { const c=S.groups[S.idx].cat; S.hands[c]++; renderScreen(); });
+  on('hMinus', () => { const c=S.groups[S.idx].cat; S.hands[c]=Math.max(0,S.hands[c]-1); renderScreen(); });
+  on('toLib', () => restart());
+  on('again', () => { S.groups=[]; go('task'); });
+}
+
+/* ---------- Render: phone / worksheet ---------- */
+function renderSide(){
+  const side = $('side');
+  if (S.mode === 'paper'){
+    $('sideLabel').textContent = 'Printed worksheet (paper mode)';
+    side.innerHTML = `<div class="worksheet">
+      <div class="foot"><span>AIventura · Module 1</span><span>No name needed</span></div>
+      <h3>Talking to AI</h3>
+      <div class="msg bot">Give me instructions to make a peanut butter and jelly sandwich. I will do exactly what you write!</div>
+      <div><b>Your instructions:</b><div class="lines">${'<span></span>'.repeat(9)}</div></div>
+      <div class="foot"><span>Write your steps, then look at the big screen.</span></div>
+    </div>`;
+    return;
+  }
+  $('sideLabel').textContent = 'Student phone (try it)';
+  let h = '';
+  const st = S.step;
+  if (S.phone === 'join'){
+    const open = st === 'lobby' || st === 'task';
+    h = `<div class="ph-title">AIventura</div>
+    <div class="ph-center">
+      <label for="code" class="small">Type the code on the big screen</label>
+      <input class="ph-input" id="code" inputmode="numeric" maxlength="7" placeholder="482 913" value="${open?'482 913':''}">
+      <button class="ph-btn" id="join" ${open?'':'disabled'}>Join</button>
+      <p class="hint">${open ? 'No name, no account. Just the code.' : 'The teacher hasn’t started a lesson yet. Click “Start Module 1” on the big screen.'}</p>
+    </div>`;
+  } else if (S.phone === 'waiting'){
+    h = `<div class="ph-center"><div class="ph-av">${robotIcon}</div><div class="ph-title" style="margin:0">You’re in!</div><p class="hint">Look at the big screen. The challenge starts soon.</p></div>`;
+  } else if (S.phone === 'answer'){
+    h = `<div class="chat"><div class="msg bot">Give me instructions to make a peanut butter and jelly sandwich. I will do <b>exactly</b> what you write!</div></div>
+    <div class="composer"><label for="ans" class="small">Your instructions</label>
+      <textarea id="ans" maxlength="400" placeholder="Step 1: ...">${esc(S.draft)}</textarea>
+      <button class="ph-btn" id="send">Send</button>
+      <p class="hint">Pretend the computer has never made a sandwich.</p></div>`;
+  } else if (S.phone === 'sent'){
+    h = `<div class="chat"><div class="msg bot">Give me instructions to make a peanut butter and jelly sandwich.</div><div class="msg me">${esc(S.userAnswer)}</div></div>
+    <div class="ph-center" style="flex:0"><div class="ph-title" style="margin:0">Sent!</div><p class="hint">${st==='task'?'Wait for your classmates, then look at the big screen.':'Look at the big screen and join the discussion.'}</p></div>`;
+  }
+  side.innerHTML = `<div class="phone"><div class="phone-screen"><span class="notch"></span>${h}</div></div>`;
+
+  const j = $('join'); if (j) j.onclick = () => { S.userJoined = true; S.phone = (S.step==='task') ? 'answer' : 'waiting'; render(); };
+  const ta = $('ans'); if (ta) ta.oninput = e => { S.draft = e.target.value; };
+  const sd = $('send'); if (sd) sd.onclick = () => {
+    const v = (S.draft || '').trim(); if (!v) { ta && ta.focus(); return; }
+    S.userAnswer = v; S.userCat = categorize(v); S.draft=''; S.phone = 'sent';
+    if (S.step === 'lobby') { /* answering before the start isn't possible */ }
+    render();
+  };
+}
+
+/* ---------- Behind the scenes ---------- */
+const BEHIND = {
+  library:['Lovable','The teacher picks a lesson, age, language and classroom type. Teachers log in; students never do.'],
+  lobby_devices:['Lovable','A session is created with a join code. Students join with the code only: no names, no accounts, nothing personal stored.'],
+  lobby_paper:['No tech','Paper mode works in schools without student devices. Only the teacher’s screen is used.'],
+  task_devices:['Lovable database','Answers arrive live. The big screen only shows how many have answered, never what anyone wrote.'],
+  task_paper:['No tech','Students write by hand while the teacher keeps time. Nothing is collected.'],
+  sorting:['Make + AI','Lovable sends the answers to a Make webhook. The AI labels each answer with one of 6 groups and sends the labels back. In this prototype a simple keyword rule stands in for the AI.'],
+  scenario_devices:['Lovable','Only the groups the class actually wrote are shown, with counts and one anonymous answer. The teacher leads the discussion; the AI never talks to the children.'],
+  scenario_paper:['No AI','The teacher walks through all 6 scenarios and counts raised hands. Same learning, no devices.'],
+  wrap:['Same engine','Every other module reuses this flow. A new lesson only needs a new challenge and its 6 scenarios.']
+};
+function renderBehind(){
+  const k = BEHIND[S.step] ? S.step : `${S.step}_${S.mode}`;
+  const [tool, text] = BEHIND[k] || BEHIND.library;
+  $('behindTool').textContent = tool; $('behindText').textContent = text;
+}
+
+function renderSteps(){
+  const list = S.mode === 'devices'
+    ? [['library','Choose lesson'],['lobby','Students join'],['task','Write answers'],['sorting','AI sorts'],['scenario','Discuss groups'],['wrap','Wrap up']]
+    : [['library','Choose lesson'],['lobby','Hand out sheets'],['task','Write on paper'],['scenario','Discuss scenarios'],['wrap','Wrap up']];
+  $('steps').innerHTML = list.map(([k,l]) => `<span class="${k===S.step?'on':''}">${l}</span>`).join('');
+}
+
+function render(){
+  // keep phone state consistent with the classroom
+  if (S.mode==='devices' && S.userJoined && S.step==='task' && S.phone==='waiting') S.phone='answer';
+  if (S.mode==='devices' && !S.userJoined) S.phone='join';
+  renderScreen(); renderSide(); renderBehind(); renderSteps();
+  $('modeDevices').setAttribute('aria-pressed', S.mode==='devices'); $('modePaper').setAttribute('aria-pressed', S.mode==='paper');
+}
+
+$('modeDevices').onclick = () => setMode('devices');
+$('modePaper').onclick = () => setMode('paper');
+$('restart').onclick = restart;
+render();
+})();
+</script>
+
+</body></html>
