@@ -42,6 +42,7 @@ function Join() {
   const submitFn = useServerFn(submitPrompt);
 
   useEffect(() => setNick(Math.floor(Math.random() * NICKNAMES.length)), []);
+  useEffect(() => { if (search.code) setCode(formatCode(normaliseCode(search.code))); }, [search.code]);
 
   const safety = checkPrompt(text);
 
