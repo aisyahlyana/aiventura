@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Campi, StarPage, Wordmark } from "@/components/brand/Brand";
 import { CheckIcon, FlagIcon, LockIcon, PlayIcon, StarIcon, TentIcon, TrophyIcon } from "@/components/brand/Icons";
 import { PHASES, STARS_PER_STEP, TOTAL_STEPS, useProgress } from "@/lib/journey";
-import { useCameFrom } from "@/lib/back";
 import { BackLink } from "@/components/brand/BackButton";
 
 export const Route = createFileRoute("/journey")({
@@ -26,7 +25,6 @@ function JourneyMap() {
   const { progress, setProgress } = useProgress();
   const [open, setOpen] = useState<number | null>(null);
   const navigate = useNavigate();
-  const from = useCameFrom();
   const finished = progress >= TOTAL_STEPS;
   let g = 0;
 
@@ -47,7 +45,7 @@ function JourneyMap() {
             <button type="button" className="btn-ghost" onClick={() => { setProgress(0); setOpen(null); }}>
               Start over
             </button>
-            {from && <BackLink to={from} label="Back" />}
+            <BackLink to="/" label="Back" />
           </div>
         </div>
       </header>
