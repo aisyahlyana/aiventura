@@ -74,7 +74,7 @@ function Lesson({ onDone }: { onDone: () => void }) {
     ? "Not quite! Read the dashed words again, then try another part."
     : last
       ? `Yes! “${last.text}” is part ${last.n}: ${last.name} Next one!`
-      : "Find the piece with the dashed outline in the better prompt. What job does it do? Tap the matching card below.";
+      : "Tap the card that matches the dashed piece.";
 
   return (
     <section className="card-raised flex flex-col gap-5 p-6">
@@ -90,18 +90,13 @@ function Lesson({ onDone }: { onDone: () => void }) {
         </div>
       </div>
 
-      <ol className="m-0 flex list-none flex-col gap-2 rounded-[18px] bg-sun-tint p-4 text-[17px] font-bold leading-6">
-        <li><strong>1.</strong> Read the short prompt and the better prompt below.</li>
-        <li><strong>2.</strong> The better prompt is split into four pieces. One piece has a <strong>dashed outline</strong>.</li>
-        <li><strong>3.</strong> Tap the card underneath that says what job that piece does. Do it for all four pieces.</li>
-      </ol>
 
       <div className="flex flex-col gap-3 rounded-[18px] bg-surface-soft px-5 py-[18px]">
-        <div className="flex flex-wrap items-baseline gap-2.5">
-          <span className="text-[13px] font-black uppercase tracking-[.1em] text-ink-muted">Short prompt</span>
-          <span className="text-lg font-bold text-ink-muted">“Tell me about volcanoes.”</span>
+        <div className="flex flex-col gap-1">
+          <span className="font-display text-[20px] leading-[26px] text-ink-muted">Here is a short prompt:</span>
+          <span className="font-display text-[30px] leading-[38px]">“Tell me about volcanoes.”</span>
         </div>
-        <div className="text-[13px] font-black uppercase tracking-[.1em] text-blue-deep">Better prompt (same question, with four parts added)</div>
+        <div className="mt-2 font-display text-[22px] leading-[28px] text-blue-deep">This is a better prompt. What does each part do?</div>
         <div className="flex flex-wrap gap-2.5">
           {PARTS.map((p) => {
             const isSolved = solved.includes(p.id), cur = p.id === curId;
@@ -215,14 +210,9 @@ function Practise({ checked, onCheck, onRetry }: { checked: boolean; onCheck: ()
         <Campi width={104} />
         <div className="min-w-0 flex-[1_1_420px]">
           <div className="kicker text-pink-deep">Your mission</div>
-          <p className="m-0 mt-1 font-display text-[26px] leading-[33px]">You're preparing a presentation about climate change.</p>
-          <p className="m-0 mt-1.5 text-[17px] font-bold leading-6 text-ink-muted">Your prompt, “{START_PROMPT}”, is too short to get a good answer.</p>
-          <ol className="m-0 mt-3 flex list-none flex-col gap-1.5 rounded-2xl bg-sun-tint p-3.5 text-[16px] font-bold leading-[22px]">
-            <li><strong>1.</strong> Look at the pink prompt pieces. Some help the AI, some don't.</li>
-            <li><strong>2.</strong> Tap (or drag) only the pieces that make the answer better for your presentation.</li>
-            <li><strong>3.</strong> Leave out pieces that share private information or ask for too much.</li>
-            <li><strong>4.</strong> Press <strong>Check my prompt</strong> to see how you did. Hint: 4 pieces help.</li>
-          </ol>
+          <p className="m-0 mt-1 text-[17px] font-bold leading-6 text-ink-muted">You're making a presentation about climate change. Here is our prompt:</p>
+          <p className="m-0 mt-1 font-display text-[34px] leading-[42px]">“{START_PROMPT}”</p>
+          <p className="m-0 mt-1.5 font-display text-[22px] leading-[28px] text-pink-deep">How do we make it better?</p>
         </div>
       </section>
 
